@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenCTI Relationship Explorer - Interactive Diagram</title>
+    <title>OpenCTI Relationship Explorer v0.1.2.5 - Interactive Diagram</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
@@ -15,7 +15,7 @@
 
         body {
             font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0a1929;
+            background: #0a141e;
             color: #ffffff;
             overflow-x: hidden;
         }
@@ -29,10 +29,10 @@
         header {
             text-align: center;
             padding: 30px 20px;
-            background: #001e3c;
+            background: #122330;
             border-radius: 8px;
             margin-bottom: 24px;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
         }
 
         h1 {
@@ -43,9 +43,21 @@
         }
 
         .subtitle {
-            color: #90caf9;
+            color: #00bcd4;
             font-size: 1.1em;
             font-weight: 400;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: #00838f;
+            color: #ffffff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: 600;
+            margin-left: 12px;
+            vertical-align: middle;
         }
 
         .controls {
@@ -54,10 +66,10 @@
             margin-bottom: 24px;
             flex-wrap: wrap;
             align-items: center;
-            background: #001e3c;
+            background: #122330;
             padding: 16px;
             border-radius: 8px;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
         }
 
         .search-box {
@@ -69,9 +81,9 @@
         #searchInput {
             width: 100%;
             padding: 12px 16px;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
             border-radius: 4px;
-            background: #0a1929;
+            background: #0a141e;
             color: #ffffff;
             font-size: 15px;
             font-family: 'IBM Plex Sans', sans-serif;
@@ -80,12 +92,12 @@
 
         #searchInput:focus {
             outline: none;
-            border-color: #90caf9;
+            border-color: #00bcd4;
             box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.1);
         }
 
         #searchInput::placeholder {
-            color: #546e7a;
+            color: #607d8b;
         }
 
         .filter-group {
@@ -96,10 +108,10 @@
 
         .filter-btn {
             padding: 10px 20px;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
             border-radius: 4px;
-            background: #0a1929;
-            color: #90caf9;
+            background: #0a141e;
+            color: #00bcd4;
             cursor: pointer;
             transition: all 0.2s ease;
             font-size: 14px;
@@ -108,26 +120,27 @@
         }
 
         .filter-btn:hover {
-            background: #001e3c;
-            border-color: #90caf9;
+            background: #122330;
+            border-color: #00bcd4;
         }
 
         .filter-btn.active {
-            background: #1976d2;
-            border-color: #1976d2;
+            background: #00838f;
+            border-color: #00838f;
             color: #ffffff;
         }
 
         .main-content {
             display: grid;
-            grid-template-columns: 320px 1fr 380px;
+            grid-template-columns: 380px 1fr 380px;
             gap: 20px;
-            min-height: 900px;
+            min-height: calc(100vh - 240px);
+            align-items: stretch;
         }
 
         @media (max-width: 1600px) {
             .main-content {
-                grid-template-columns: 280px 1fr 340px;
+                grid-template-columns: 320px 1fr 340px;
             }
         }
 
@@ -138,18 +151,18 @@
         }
 
         .entity-list {
-            background: #001e3c;
+            background: #122330;
             border-radius: 8px;
             padding: 20px;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
             overflow-y: auto;
-            max-height: calc(100vh - 240px);
+            height: 100%;
         }
 
         .entity-list h2 {
             font-size: 1.3em;
             margin-bottom: 20px;
-            color: #90caf9;
+            color: #00bcd4;
             font-weight: 600;
         }
 
@@ -159,7 +172,7 @@
 
         .category-title {
             font-size: 0.85em;
-            color: #546e7a;
+            color: #607d8b;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 12px;
@@ -170,35 +183,35 @@
         .entity-item {
             padding: 12px 16px;
             margin-bottom: 6px;
-            background: #0a1929;
+            background: #0a141e;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s ease;
             border-left: 3px solid transparent;
             font-size: 14px;
             font-weight: 500;
-            color: #e3f2fd;
+            color: #e0f2f1;
         }
 
         .entity-item:hover {
-            background: #0d47a1;
-            border-left-color: #90caf9;
+            background: #006064;
+            border-left-color: #00bcd4;
             transform: translateX(4px);
             color: #ffffff;
         }
 
         .entity-item.selected {
-            background: #1976d2;
-            border-left-color: #90caf9;
+            background: #00838f;
+            border-left-color: #00bcd4;
             color: #ffffff;
             font-weight: 600;
         }
 
         .canvas-area {
-            background: #001e3c;
+            background: #122330;
             border-radius: 8px;
             padding: 40px;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
             position: relative;
             overflow: auto;
             display: flex;
@@ -225,18 +238,18 @@
         }
 
         .info-panel {
-            background: #001e3c;
+            background: #122330;
             border-radius: 8px;
             padding: 24px;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
             overflow-y: auto;
-            max-height: calc(100vh - 240px);
+            height: 100%;
         }
 
         .info-panel h2 {
             font-size: 1.5em;
             margin-bottom: 16px;
-            color: #90caf9;
+            color: #00bcd4;
             font-weight: 600;
         }
 
@@ -247,7 +260,7 @@
         .info-section h3 {
             font-size: 1.1em;
             margin-bottom: 12px;
-            color: #90caf9;
+            color: #00bcd4;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -257,36 +270,36 @@
         .relationship-item {
             padding: 12px 16px;
             margin-bottom: 8px;
-            background: #0a1929;
+            background: #0a141e;
             border-radius: 4px;
-            border-left: 3px solid #42a5f5;
+            border-left: 3px solid #00acc1;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .relationship-item:hover {
-            background: #0d47a1;
+            background: #006064;
             transform: translateX(4px);
         }
 
         .relationship-item.incoming-rel {
-            border-left-color: #ab47bc;
+            border-left-color: #9c27b0;
         }
 
         .relationship-type {
-            color: #90caf9;
+            color: #00bcd4;
             font-weight: 600;
             font-size: 14px;
             margin-bottom: 4px;
         }
 
         .relationship-target {
-            color: #b0bec5;
+            color: #cfd8dc;
             font-size: 13px;
         }
 
         .arrow {
-            color: #546e7a;
+            color: #607d8b;
             margin: 0 6px;
             font-weight: 600;
         }
@@ -302,18 +315,18 @@
 
         .badge.outgoing {
             background: rgba(66, 165, 245, 0.2);
-            color: #42a5f5;
+            color: #00acc1;
         }
 
         .badge.incoming {
             background: rgba(171, 71, 188, 0.2);
-            color: #ce93d8;
+            color: #ba68c8;
         }
 
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #546e7a;
+            color: #607d8b;
         }
 
         .empty-state svg {
@@ -324,7 +337,7 @@
         }
 
         .empty-state h3 {
-            color: #90caf9;
+            color: #00bcd4;
             margin-bottom: 12px;
             font-weight: 600;
         }
@@ -340,21 +353,21 @@
             flex: 1;
             min-width: 100px;
             padding: 16px;
-            background: #0a1929;
+            background: #0a141e;
             border-radius: 4px;
             text-align: center;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
         }
 
         .stat-number {
             font-size: 2em;
             font-weight: 700;
-            color: #42a5f5;
+            color: #00acc1;
         }
 
         .stat-label {
             font-size: 0.85em;
-            color: #90caf9;
+            color: #00bcd4;
             margin-top: 4px;
             font-weight: 500;
         }
@@ -362,14 +375,14 @@
         .legend {
             margin-top: 24px;
             padding: 16px;
-            background: #0a1929;
+            background: #0a141e;
             border-radius: 4px;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
         }
 
         .legend h4 {
             font-size: 0.9em;
-            color: #90caf9;
+            color: #00bcd4;
             margin-bottom: 16px;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -382,7 +395,7 @@
             gap: 12px;
             margin-bottom: 12px;
             font-size: 13px;
-            color: #b0bec5;
+            color: #cfd8dc;
         }
 
         .legend-color {
@@ -398,12 +411,12 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #0a1929;
+            background: #0a141e;
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #1e4976;
+            background: #1e3a52;
             border-radius: 4px;
         }
 
@@ -422,16 +435,16 @@
             background: rgba(10, 25, 41, 0.95);
             padding: 8px;
             border-radius: 4px;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
         }
 
         .zoom-btn {
             width: 40px;
             height: 40px;
-            background: #0a1929;
-            border: 1px solid #1e4976;
+            background: #0a141e;
+            border: 1px solid #1e3a52;
             border-radius: 4px;
-            color: #90caf9;
+            color: #00bcd4;
             font-size: 18px;
             cursor: pointer;
             display: flex;
@@ -442,7 +455,7 @@
         }
 
         .zoom-btn:hover {
-            background: #1976d2;
+            background: #00838f;
             color: #ffffff;
         }
 
@@ -458,7 +471,7 @@
             font-size: 14px;
             font-weight: 500;
             z-index: 10;
-            border: 1px solid #42a5f5;
+            border: 1px solid #00acc1;
         }
 
         .help-text {
@@ -467,19 +480,20 @@
             left: 50%;
             transform: translateX(-50%);
             background: rgba(10, 25, 41, 0.95);
-            color: #90caf9;
+            color: #00bcd4;
             padding: 10px 20px;
             border-radius: 4px;
             font-size: 13px;
             z-index: 10;
-            border: 1px solid #1e4976;
+            border: 1px solid #1e3a52;
         }
+
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🔗 OpenCTI Relationship Explorer</h1>
+<h1>🔗 OpenCTI Relationship Explorer <span class="version-badge">v0.1.2.12</span></h1>
             <p class="subtitle">Interactive visualization with draggable nodes - Click and drag any entity to reposition</p>
         </header>
 
@@ -490,8 +504,7 @@
             <div class="filter-group">
                 <button class="filter-btn active" data-filter="all">All Types</button>
                 <button class="filter-btn" data-filter="sdo">SDO</button>
-                <button class="filter-btn" data-filter="sco">SCO</button>
-                <button class="filter-btn" data-filter="extended">Extended</button>
+                <button class="filter-btn" data-filter="observables">Observables</button>
             </div>
         </div>
 
@@ -526,8 +539,67 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
     <script>
+        // Entity icon mapping - OpenCTI style
+        // Based on common CTI icon conventions
+        const entityIcons = {
+            'Artifact': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Attack Pattern': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNNywzQTQsNCAwIDAsMSAxMSw3QzExLDguODYgOS43MywxMC40MyA4LDEwLjg3VjEzLjEzQzguMzcsMTMuMjIgOC43MiwxMy4zNyA5LjA0LDEzLjU2TDEzLjU2LDkuMDRDMTMuMiw4LjQ0IDEzLDcuNzUgMTMsN0E0LDQgMCAwLDEgMTcsM0E0LDQgMCAwLDEgMjEsN0E0LDQgMCAwLDEgMTcsMTFDMTYuMjYsMTEgMTUuNTcsMTAuOCAxNSwxMC40NUwxMC40NSwxNUMxMC44LDE1LjU3IDExLDE2LjI2IDExLDE3QTQsNCAwIDAsMSA3LDIxQTQsNCAwIDAsMSAzLDE3QzMsMTUuMTQgNC4yNywxMy41NyA2LDEzLjEzVjEwLjg3QzQuMjcsMTAuNDMgMyw4Ljg2IDMsN0E0LDQgMCAwLDEgNywzTTE3LDEzQTQsNCAwIDAsMSAyMSwxN0E0LDQgMCAwLDEgMTcsMjFBNCw0IDAgMCwxIDEzLDE3QTQsNCAwIDAsMSAxNywxM00xNywxNUEyLDIgMCAwLDAgMTUsMTdBMiwyIDAgMCwwIDE3LDE5QTIsMiAwIDAsMCAxOSwxN0EyLDIgMCAwLDAgMTcsMTVaIiAvPjwvc3ZnPgo=',
+            'Autonomous-System': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Bank-Account': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Campaign': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNMTksMjJINVYyMEgxOVYyMk0xMywyVjJDMTEuNzUsMiAxMC41OCwyLjYyIDkuODksMy42Nkw3LDhMOSwxMEwxMS4wNiw4LjYzQzExLjUsOC4zMiAxMi4xNCw4LjQ0IDEyLjQ1LDguOUMxMi40Nyw4LjkzIDEyLjUsOC45NiAxMi41LDlWOUMxMi44LDkuNTkgMTIuNjksMTAuMyAxMi4yMiwxMC43N0w3LjQyLDE1LjU3QzYuODcsMTYuMTMgNi44NywxNy4wMyA3LjQzLDE3LjU4QzcuNjksMTcuODQgOC4wNSwxOCA4LjQyLDE4SDE3VjZBNCw0IDAgMCwwIDEzLDJaIiAvPjwvc3ZnPgo=',
+            'Case': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTE3IDE4QzE3LjYgMTggMTggMTguNCAxOCAxOVMxNy42IDIwIDE3IDIwIDE2IDE5LjYgMTYgMTkgMTYuNCAxOCAxNyAxOE0xNyAxNUMxNC4zIDE1IDExLjkgMTYuNyAxMSAxOUMxMS45IDIxLjMgMTQuMyAyMyAxNyAyM1MyMi4xIDIxLjMgMjMgMTlDMjIuMSAxNi43IDE5LjcgMTUgMTcgMTVNMTcgMjEuNUMxNS42IDIxLjUgMTQuNSAyMC40IDE0LjUgMTlTMTUuNiAxNi41IDE3IDE2LjUgMTkuNSAxNy42IDE5LjUgMTkgMTguNCAyMS41IDE3IDIxLjVNOS4xIDE5LjdMOC44IDE5SDRWOEgyMFYxMy42QzIwLjcgMTMuOSAyMS40IDE0LjIgMjIgMTQuN1Y4QzIyIDcuNSAyMS44IDcgMjEuNCA2LjZDMjEgNi4yIDIwLjYgNiAyMCA2SDE2VjRDMTYgMy40IDE1LjggMyAxNS40IDIuNkMxNSAyLjIgMTQuNiAyIDE0IDJIMTBDOS40IDIgOSAyLjIgOC42IDIuNkM4LjIgMyA4IDMuNCA4IDRWNkg0QzMuNCA2IDMgNi4yIDIuNiA2LjZDMi4yIDcgMiA3LjUgMiA4VjE5QzIgMTkuNSAyLjIgMjAgMi42IDIwLjRDMyAyMC44IDMuNCAyMSA0IDIxSDkuOEM5LjUgMjAuNiA5LjMgMjAuMiA5LjEgMTkuN00xMCA0SDE0VjZIMTBWNFoiIC8+PC9zdmc+',
+            'Channel': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNMjAsNEg0QTIsMiAwIDAsMCAyLDZWMThBMiwyIDAgMCwwIDQsMjBIMjBBMiwyIDAgMCwwIDIyLDE4VjZBMiwyIDAgMCwwIDIwLDRNNy43NiwxNi4yNEw2LjM1LDE3LjY1QzQuNzgsMTYuMSA0LDE0LjA1IDQsMTJDNCw5Ljk1IDQuNzgsNy45IDYuMzQsNi4zNEw3Ljc1LDcuNzVDNi41OSw4LjkzIDYsMTAuNDYgNiwxMkM2LDEzLjU0IDYuNTksMTUuMDcgNy43NiwxNi4yNE0xMiwxNkE0LDQgMCAwLDEgOCwxMkE0LDQgMCAwLDEgMTIsOEE0LDQgMCAwLDEgMTYsMTJBNCw0IDAgMCwxIDEyLDE2TTE3LjY2LDE3LjY2TDE2LjI1LDE2LjI1QzE3LjQxLDE1LjA3IDE4LDEzLjU0IDE4LDEyQzE4LDEwLjQ2IDE3LjQxLDguOTMgMTYuMjQsNy43NkwxNy42NSw2LjM1QzE5LjIyLDcuOSAyMCw5Ljk1IDIwLDEyQzIwLDE0LjA1IDE5LjIyLDE2LjEgMTcuNjYsMTcuNjZNMTIsMTBBMiwyIDAgMCwwIDEwLDEyQTIsMiAwIDAsMCAxMiwxNEEyLDIgMCAwLDAgMTQsMTJBMiwyIDAgMCwwIDEyLDEwWiIgLz48L3N2Zz4K',
+            'Course of Action': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEzLDIuMDNWMi4wNUwxMyw0LjA1QzE3LjM5LDQuNTkgMjAuNSw4LjU4IDE5Ljk2LDEyLjk3QzE5LjUsMTYuNjEgMTYuNjQsMTkuNSAxMywxOS45M1YyMS45M0MxOC41LDIxLjM4IDIyLjUsMTYuNSAyMS45NSwxMUMyMS41LDYuMjUgMTcuNzMsMi41IDEzLDIuMDNNMTEsMi4wNkM5LjA1LDIuMjUgNy4xOSwzIDUuNjcsNC4yNkw3LjEsNS43NEM4LjIyLDQuODQgOS41Nyw0LjI2IDExLDQuMDZWMi4wNk00LjI2LDUuNjdDMyw3LjE5IDIuMjUsOS4wNCAyLjA1LDExSDQuMDVDNC4yNCw5LjU4IDQuOCw4LjIzIDUuNjksNy4xTDQuMjYsNS42N00yLjA2LDEzQzIuMjYsMTQuOTYgMy4wMywxNi44MSA0LjI3LDE4LjMzTDUuNjksMTYuOUM0LjgxLDE1Ljc3IDQuMjQsMTQuNDIgNC4wNiwxM0gyLjA2TTcuMSwxOC4zN0w1LjY3LDE5Ljc0QzcuMTgsMjEgOS4wNCwyMS43OSAxMSwyMlYyMEM5LjU4LDE5LjgyIDguMjMsMTkuMjUgNy4xLDE4LjM3TTE2LjgyLDE1LjE5TDEyLjcxLDExLjA4QzEzLjEyLDEwLjA0IDEyLjg5LDguODIgMTIuMDMsNy45N0MxMS4xMyw3LjA2IDkuNzgsNi44OCA4LjY5LDcuMzhMMTAuNjMsOS4zMkw5LjI4LDEwLjY4TDcuMjksOC43M0M2Ljc1LDkuODIgNywxMS4xNyA3Ljg4LDEyLjA4QzguNzQsMTIuOTQgOS45NiwxMy4xNiAxMSwxMi43NkwxNS4xMSwxNi44NkMxNS4yOSwxNy4wNSAxNS41NiwxNy4wNSAxNS43NCwxNi44NkwxNi43OCwxNS44M0MxNywxNS42NSAxNywxNS4zMyAxNi44MiwxNS4xOVoiIC8+PC9zdmc+Cg==',
+            'Credential': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Cryptocurrency-Wallet': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Directory': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Domain-Name': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Email-Addr': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Email-Message': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Email-Mime-Part-Type': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Event': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNMTIgMTJIMTdWMTdIMTJWMTJNMTkgM0gxOFYxSDE2VjNIOFYxSDZWM0g1QzMuOSAzIDMgMy45IDMgNVYxOUMzIDIwLjEgMy45IDIxIDUgMjFIMTlDMjAuMSAyMSAyMSAyMC4xIDIxIDE5VjVDMjEgMy45IDIwLjEgMyAxOSAzTTE5IDVWN0g1VjVIMTlNNSAxOVY5SDE5VjE5SDVaIiAvPjwvc3ZnPgo=',
+            'File': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Grouping': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTYgMTVjMS4xIDAgMiAuOSAyIDJzLS45IDItMiAyLTItLjktMi0yIC45LTIgMi0ybTAtMmMtMi4yIDAtNCAxLjgtNCA0czEuOCA0IDQgNCA0LTEuOCA0LTQtMS44LTQtNC00em02LThjMS4xIDAgMiAuOSAyIDJzLS45IDItMiAyLTItLjktMi0yIC45LTIgMi0ybTAtMkM5LjggMyA4IDQuOCA4IDdzMS44IDQgNCA0IDQtMS44IDQtNC0xLjgtNC00LTR6bTYgMTJjMS4xIDAgMiAuOSAyIDJzLS45IDItMiAyLTItLjktMi0yIC45LTIgMi0ybTAtMmMtMi4yIDAtNCAxLjgtNCA0czEuOCA0IDQgNCA0LTEuOCA0LTQtMS44LTQtNC00eiIvPjwvc3ZnPg==',
+            'Hostname': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'IPv4-Addr': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'IPv6-Addr': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Identity': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEyIDZjMS4xIDAgMiAuOSAyIDJzLS45IDItMiAyLTItLjktMi0yIC45LTIgMi0ybTAgMTBjMi43IDAgNS44IDEuMjkgNiAySDZjLjIzLS43MiAzLjMxLTIgNi0ybTAtMTJDOS43OSA0IDggNS43OSA4IDhzMS43OSA0IDQgNCA0LTEuNzkgNC00LTEuNzktNC00LTR6bTAgMTBjLTIuNjcgMC04IDEuMzQtOCA0djJoMTZ2LTJjMC0yLjY2LTUuMzMtNC04LTR6Ii8+PC9zdmc+Cg==',
+            'Incident': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNMTcuNjYgMTEuMkMxNy40MyAxMC45IDE3LjE1IDEwLjY0IDE2Ljg5IDEwLjM4QzE2LjIyIDkuNzggMTUuNDYgOS4zNSAxNC44MiA4LjcyQzEzLjMzIDcuMjYgMTMgNC44NSAxMy45NSAzQzEzIDMuMjMgMTIuMTcgMy43NSAxMS40NiA0LjMyQzguODcgNi40IDcuODUgMTAuMDcgOS4wNyAxMy4yMkM5LjExIDEzLjMyIDkuMTUgMTMuNDIgOS4xNSAxMy41NUM5LjE1IDEzLjc3IDkgMTMuOTcgOC44IDE0LjA1QzguNTcgMTQuMTUgOC4zMyAxNC4wOSA4LjE0IDEzLjkzQzguMDggMTMuODggOC4wNCAxMy44MyA4IDEzLjc2QzYuODcgMTIuMzMgNi42OSAxMC4yOCA3LjQ1IDguNjRDNS43OCAxMCA0Ljg3IDEyLjMgNSAxNC40N0M1LjA2IDE0Ljk3IDUuMTIgMTUuNDcgNS4yOSAxNS45N0M1LjQzIDE2LjU3IDUuNyAxNy4xNyA2IDE3LjdDNy4wOCAxOS40MyA4Ljk1IDIwLjY3IDEwLjk2IDIwLjkyQzEzLjEgMjEuMTkgMTUuMzkgMjAuOCAxNy4wMyAxOS4zMkMxOC44NiAxNy42NiAxOS41IDE1IDE4LjU2IDEyLjcyTDE4LjQzIDEyLjQ2QzE4LjIyIDEyIDE3LjY2IDExLjIgMTcuNjYgMTEuMk0xNC41IDE3LjVDMTQuMjIgMTcuNzQgMTMuNzYgMTggMTMuNCAxOC4xQzEyLjI4IDE4LjUgMTEuMTYgMTcuOTQgMTAuNSAxNy4yOEMxMS42OSAxNyAxMi40IDE2LjEyIDEyLjYxIDE1LjIzQzEyLjc4IDE0LjQzIDEyLjQ2IDEzLjc3IDEyLjMzIDEzQzEyLjIxIDEyLjI2IDEyLjIzIDExLjYzIDEyLjUgMTAuOTRDMTIuNjkgMTEuMzIgMTIuODkgMTEuNyAxMy4xMyAxMkMxMy45IDEzIDE1LjExIDEzLjQ0IDE1LjM3IDE0LjhDMTUuNDEgMTQuOTQgMTUuNDMgMTUuMDggMTUuNDMgMTUuMjNDMTUuNDYgMTYuMDUgMTUuMSAxNi45NSAxNC41IDE3LjVIMTQuNVoiIC8+PC9zdmc+Cg==',
+            'Indicator': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyLDlBMywzIDAgMCwxIDE1LDEyQTMsMyAwIDAsMSAxMiwxNUEzLDMgMCAwLDEgOSwxMkEzLDMgMCAwLDEgMTIsOU0xNy44NiwxOS4zMUMxNi4yMywyMS4yMiAxNC4yOCwyMi40NSAxMiwyM0M5LjQ0LDIyLjM5IDcuMywyMC45MyA1LjU4LDE4LjYzQzMuODYsMTYuMzQgMywxMy44IDMsMTFWNUwxMiwxTDIxLDVWMTFDMjEsMTMuMzkgMjAuMzYsMTUuNjEgMTkuMDgsMTcuNjdMMTYuMTcsMTQuNzZDMTYuNjksMTMuOTcgMTcsMTMgMTcsMTJBNSw1IDAgMCwwIDEyLDdBNSw1IDAgMCwwIDcsMTJBNSw1IDAgMCwwIDEyLDE3QzEzLDE3IDEzLjk3LDE2LjY5IDE0Ljc2LDE2LjE3TDE3Ljg2LDE5LjMxWiIgLz48L3N2Zz4K',
+            'Infrastructure': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEzLDE5SDE0QTEsMSAwIDAsMSAxNSwyMEgyMlYyMkgxNUExLDEgMCAwLDEgMTQsMjNIMTBBMSwxIDAgMCwxIDksMjJIMlYyMEg5QTEsMSAwIDAsMSAxMCwxOUgxMVYxN0g0QTEsMSAwIDAsMSAzLDE2VjEyQTEsMSAwIDAsMSA0LDExSDIwQTEsMSAwIDAsMSAyMSwxMlYxNkExLDEgMCAwLDEgMjAsMTdIMTNWMTlNNCwzSDIwQTEsMSAwIDAsMSAyMSw0VjhBMSwxIDAgMCwxIDIwLDlINEExLDEgMCAwLDEgMyw4VjRBMSwxIDAgMCwxIDQsM005LDdIMTBWNUg5VjdNOSwxNUgxMFYxM0g5VjE1TTUsNVY3SDdWNUg1TTUsMTNWMTVIN1YxM0g1WiIgLz48L3N2Zz4K',
+            'Intrusion Set': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNMTgsMkg2TDIsOEwxMiwyMkwyMiw4TDE4LDJNNC40Myw4TDcuMDcsNEgxNi45M0wxOS41Nyw4TDEyLDE4LjU2TDQuNDMsOFoiIC8+PC9zdmc+Cg==',
+            'Location': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMiAxMmMtMS4xIDAtMi0uOS0yLTJzLjktMiAyLTIgMiAuOSAyIDItLjkgMi0yIDJ6bTYtMS44QzE4IDYuNTcgMTUuMzUgNCAxMiA0cy02IDIuNTctNiA2LjJjMCAyLjM0IDEuOTUgNS40NCA2IDkuMTQgNC4wNS0zLjcgNi02LjggNi05LjE0ek0xMiAyYzQuMiAwIDggMy4yMiA4IDguMiAwIDMuMzItMi42NyA3LjI1LTggMTEuOC01LjMzLTQuNTUtOC04LjQ4LTgtMTEuOEM0IDUuMjIgNy44IDIgMTIgMnoiLz48L3N2Zz4K',
+            'Mac-Addr': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Malware': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNMjMsMTYuMDZDMjMsMTYuMjkgMjMsMTYuNSAyMi45NiwxNi43QzIyLjc4LDE0LjE0IDIwLjY0LDEyLjExIDE4LDEyLjExQzE3LjYzLDEyLjExIDE3LjI3LDEyLjE2IDE2LjkyLDEyLjIzQzE2Ljk2LDEyLjUgMTcsMTIuNzMgMTcsMTNDMTcsMTUuMzUgMTUuMzEsMTcuMzIgMTMuMDcsMTcuODFDMTMuNDIsMjAuMDUgMTUuMzEsMjEuNzkgMTcuNjUsMjEuOTZDMTcuNDMsMjIgMTcuMjIsMjIgMTcsMjJDMTQuOTIsMjIgMTMuMDcsMjAuOTQgMTIsMTkuMzRDMTAuOTMsMjAuOTQgOS4wOSwyMiA3LDIyQzYuNzgsMjIgNi41NywyMiA2LjM1LDIxLjk2QzguNjksMjEuNzkgMTAuNTcsMjAuMDYgMTAuOTMsMTcuODFDOC42OCwxNy4zMiA3LDE1LjM1IDcsMTNDNywxMi43MyA3LjA0LDEyLjUgNy4wNywxMi4yM0M2LjczLDEyLjE2IDYuMzcsMTIuMTEgNiwxMi4xMUMzLjM2LDEyLjExIDEuMjIsMTQuMTQgMS4wMywxNi43QzEsMTYuNSAxLDE2LjI5IDEsMTYuMDZDMSwxMi44NSAzLjU5LDEwLjI0IDYuODEsMTAuMTRDNi4zLDkuMjcgNiw4LjI1IDYsNy4xN0M2LDQuOTQgNy4yMywzIDkuMDYsMkM3LjgxLDIuOSA3LDQuMzQgNyw2QzcsNy4zNSA3LjU2LDguNTkgOC40Nyw5LjVDOS4zOCw4LjU5IDEwLjYyLDguMDQgMTIsOC4wNEMxMy4zNyw4LjA0IDE0LjYyLDguNTkgMTUuNSw5LjVDMTYuNDMsOC41OSAxNyw3LjM1IDE3LDZDMTcsNC4zNCAxNi4xOCwyLjkgMTQuOTQsMkMxNi43NywzIDE4LDQuOTQgMTgsNy4xN0MxOCw4LjI1IDE3LjcsOS4yNyAxNy4xOSwxMC4xNEMyMC40MiwxMC4yNCAyMywxMi44NSAyMywxNi4wNk05LjI3LDEwLjExQzEwLjA1LDEwLjYyIDExLDEwLjkyIDEyLDEwLjkyQzEzLDEwLjkyIDEzLjk1LDEwLjYyIDE0LjczLDEwLjExQzE0LDkuNDUgMTMuMDYsOS4wMyAxMiw5LjAzQzEwLjk0LDkuMDMgMTAsOS40NSA5LjI3LDEwLjExTTEyLDE0LjQ3QzEyLjgyLDE0LjQ3IDEzLjUsMTMuOCAxMy41LDEzQTEuNSwxLjUgMCAwLDAgMTIsMTEuNUExLjUsMS41IDAgMCwwIDEwLjUsMTNDMTAuNSwxMy44IDExLjE3LDE0LjQ3IDEyLDE0LjQ3TTEwLjk3LDE2Ljc5QzEwLjg3LDE0LjkgOS43MSwxMy4yOSA4LjA1LDEyLjU1QzguMDMsMTIuNyA4LDEyLjg0IDgsMTNDOCwxNC44MiA5LjI3LDE2LjM0IDEwLjk3LDE2Ljc5TTE1Ljk2LDEyLjU1QzE0LjI5LDEzLjI5IDEzLjEyLDE0LjkgMTMsMTYuNzlDMTQuNzMsMTYuMzQgMTYsMTQuODIgMTYsMTNDMTYsMTIuODQgMTUuOTcsMTIuNyAxNS45NiwxMi41NVoiIC8+PC9zdmc+Cg==',
+            'Malware Analysis': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE0IDZWNGgtNHYyaDR6TTQgOHYxMWgxNlY4SDR6bTE2LTJjMS4xMSAwIDIgLjg5IDIgMnYxMWMwIDEuMTEtLjg5IDItMiAySDRjLTEuMTEgMC0yLS44OS0yLTJsLjAxLTExYzAtMS4xMS44OC0yIDEuOTktMmg0VjRjMC0xLjExLjg5LTIgMi0yaDRjMS4xMSAwIDIgLjg5IDIgMnYyaDR6Ii8+PC9zdmc+',
+            'Media-Content': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Mutex': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Narrative': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNMjAsMkg0QTIsMiAwIDAsMCAyLDRWMjJMNiwxOEgyMEEyLDIgMCAwLDAgMjIsMTZWNEEyLDIgMCAwLDAgMjAsMk04LDE0SDZWMTJIOFYxNE04LDExSDZWOUg4VjExTTgsOEg2VjZIOFY4TTE1LDE0SDEwVjEySDE1VjE0TTE4LDExSDEwVjlIMThWMTFNMTgsOEgxMFY2SDE4VjhaIiAvPjwvc3ZnPgo=',
+            'Network-Traffic': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Note': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE0IDE3SDR2MmgxMHYtMnptNi04SDR2MmgxNlY5ek00IDE1aDE2di0ySDR2MnpNNCA1djJoMTZWNUg0eiIvPjwvc3ZnPgo=',
+            'Opinion': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIwIDJINGMtMS4xIDAtMS45OS45LTEuOTkgMkwyIDIybDQtNGgxNGMxLjEgMCAyLS45IDItMlY0YzAtMS4xLS45LTItMi0yem0wIDE0SDUuMTdsLS41OS41OS0uNTguNThWNGgxNnYxMnptLTktNGgydjJoLTJ6bTAtNmgydjRoLTJ6Ii8+PC9zdmc+Cg==',
+            'Organization': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTYuNSAxMGgtMnY3aDJ2LTd6bTYgMGgtMnY3aDJ2LTd6bTguNSA5SDJ2MmgxOXYtMnptLTIuNS05aC0ydjdoMnYtN3ptLTctNi43NEwxNi43MSA2SDYuMjlsNS4yMS0yLjc0bTAtMi4yNkwyIDZ2MmgxOVY2bC05LjUtNXoiLz48L3N2Zz4K',
+            'Payment-Card': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Phone-Number': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Process': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Report': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTggMTZoOHYySDh6bTAtNGg4djJIOHptNi0xMEg2Yy0xLjEgMC0yIC45LTIgMnYxNmMwIDEuMS44OSAyIDEuOTkgMkgxOGMxLjEgMCAyLS45IDItMlY4bC02LTZ6bTQgMThINlY0aDd2NWg1djExeiIvPjwvc3ZnPgo=',
+            'Software': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'System': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTQsMUgyMEExLDEgMCAwLDEgMjEsMlY2QTEsMSAwIDAsMSAyMCw3SDRBMSwxIDAgMCwxIDMsNlYyQTEsMSAwIDAsMSA0LDFNNCw5SDIwQTEsMSAwIDAsMSAyMSwxMFYxNEExLDEgMCAwLDEgMjAsMTVINEExLDEgMCAwLDEgMywxNFYxMEExLDEgMCAwLDEgNCw5TTQsMTdIMjBBMSwxIDAgMCwxIDIxLDE4VjIyQTEsMSAwIDAsMSAyMCwyM0g0QTEsMSAwIDAsMSAzLDIyVjE4QTEsMSAwIDAsMSA0LDE3TTksNUgxMFYzSDlWNU05LDEzSDEwVjExSDlWMTNNOSwyMUgxMFYxOUg5VjIxTTUsM1Y1SDdWM0g1TTUsMTFWMTNIN1YxMUg1TTUsMTlWMjFIN1YxOUg1WiIgLz48L3N2Zz4K',
+            'Text': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Threat Actor Group': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTEzLjA3IDEwLjQxQTUgNSAwIDAgMCAxMy4wNyA0LjU5QTMuMzkgMy4zOSAwIDAgMSAxNSA0QTMuNSAzLjUgMCAwIDEgMTUgMTFBMy4zOSAzLjM5IDAgMCAxIDEzLjA3IDEwLjQxTTUuNSA3LjVBMy41IDMuNSAwIDEgMSA5IDExQTMuNSAzLjUgMCAwIDEgNS41IDcuNU03LjUgNy41QTEuNSAxLjUgMCAxIDAgOSA2QTEuNSAxLjUgMCAwIDAgNy41IDcuNU0xNiAxN1YxOUgyVjE3UzIgMTMgOSAxMyAxNiAxNyAxNiAxN00xNCAxN0MxMy44NiAxNi4yMiAxMi42NyAxNSA5IDE1UzQuMDcgMTYuMzEgNCAxN00xNS45NSAxM0E1LjMyIDUuMzIgMCAwIDEgMTggMTdWMTlIMjJWMTdTMjIgMTMuMzcgMTUuOTQgMTNaIiAvPjwvc3ZnPg==',
+            'Threat Actor Individual': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTIwIDRDMjEuMSA0IDIyIDQuODkgMjIgNlYxNkMyMiAxNy4xMSAyMS4xMSAxOCAyMCAxOEgyNFYyMEgwVjE4SDRDMi45IDE4IDIgMTcuMTEgMiAxNlY2QzIgNC44OSAyLjg5IDQgNCA0SDIwTTIwIDZINFYxNkgyMFY2TTEyIDEyQzE0LjIxIDEyIDE2IDEyLjkgMTYgMTRWMTVIOFYxNEM4IDEyLjkgOS43OSAxMiAxMiAxMk0xMiA3QzEzLjExIDcgMTQgNy45IDE0IDlTMTMuMTEgMTEgMTIgMTEgMTAgMTAuMTEgMTAgOSAxMC45IDcgMTIgN1oiIC8+PC9zdmc+Cg==',
+            'Tool': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjIyYzMwIj48cGF0aCBkPSJNMTksNEMyMC4xMSw0IDIxLDQuOSAyMSw2VjE4QTIsMiAwIDAsMSAxOSwyMEg1QzMuODksMjAgMywxOS4xIDMsMThWNkEyLDIgMCAwLDEgNSw0SDE5TTE5LDE4VjhINVYxOEgxOVoiIC8+PC9zdmc+Cg==',
+            'URL': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'User-Account': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'User-Agent': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Vulnerability': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzIyMmMzMCIgd2lkdGg9IjQ4cHgiIGhlaWdodD0iNDhweCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwVjB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIwIDhoLTIuODFjLS40NS0uNzgtMS4wNy0xLjQ1LTEuODItMS45NkwxNyA0LjQxIDE1LjU5IDNsLTIuMTcgMi4xN0MxMi45NiA1LjA2IDEyLjQ5IDUgMTIgNXMtLjk2LjA2LTEuNDEuMTdMOC40MSAzIDcgNC40MWwxLjYyIDEuNjNDNy44OCA2LjU1IDcuMjYgNy4yMiA2LjgxIDhINHYyaDIuMDljLS4wNS4zMy0uMDkuNjYtLjA5IDF2MUg0djJoMnYxYzAgLjM0LjA0LjY3LjA5IDFINHYyaDIuODFjMS4wNCAxLjc5IDIuOTcgMyA1LjE5IDNzNC4xNS0xLjIxIDUuMTktM0gyMHYtMmgtMi4wOWMuMDUtLjMzLjA5LS42Ni4wOS0xdi0xaDJ2LTJoLTJ2LTFjMC0uMzQtLjA0LS42Ny0uMDktMUgyMFY4em0tNCA0djNjMCAuMjItLjAzLjQ3LS4wNy43bC0uMS42NS0uMzcuNjVjLS43MiAxLjI0LTIuMDQgMi0zLjQ2IDJzLTIuNzQtLjc3LTMuNDYtMmwtLjM3LS42NC0uMS0uNjVDOC4wMyAxNS40OCA4IDE1LjIzIDggMTV2LTRjMC0uMjMuMDMtLjQ4LjA3LS43bC4xLS42NS4zNy0uNjVjLjMtLjUyLjcyLS45NyAxLjIxLTEuMzFsLjU3LS4zOS43NC0uMThjLjMxLS4wOC42My0uMTIuOTQtLjEyLjMyIDAgLjYzLjA0Ljk1LjEybC42OC4xNi42MS40MmMuNS4zNC45MS43OCAxLjIxIDEuMzFsLjM4LjY1LjEuNjVjLjA0LjIyLjA3LjQ3LjA3LjY5djF6bS02IDJoNHYyaC00em0wLTRoNHYyaC00eiIvPjwvc3ZnPgo=',
+            'Windows-Registry-Key': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'Windows-Registry-Value-Type': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+            'X509-Certificate': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGZpbGw9IiMyMjJjMzAiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIxLDE2LjVDMjEsMTYuODggMjAuNzksMTcuMjEgMjAuNDcsMTcuMzhMMTIuNTcsMjEuODJDMTIuNDEsMjEuOTQgMTIuMjEsMjIgMTIsMjJDMTEuNzksMjIgMTEuNTksMjEuOTQgMTEuNDMsMjEuODJMMy41MywxNy4zOEMzLjIxLDE3LjIxIDMsMTYuODggMywxNi41VjcuNUMzLDcuMTIgMy4yMSw2Ljc5IDMuNTMsNi42MkwxMS40MywyLjE4QzExLjU5LDIuMDYgMTEuNzksMiAxMiwyQzEyLjIxLDIgMTIuNDEsMi4wNiAxMi41NywyLjE4TDIwLjQ3LDYuNjJDMjAuNzksNi43OSAyMSw3LjEyIDIxLDcuNVYxNi41TTEyLDQuMTVMNSw4LjA5VjE1LjkxTDEyLDE5Ljg1TDE5LDE1LjkxVjguMDlMMTIsNC4xNVoiIC8+PC9zdmc+Cg==',
+        };
+
         // Complete relationship data with all entities
         const allEntities = [
             'Artifact', 'Attack Pattern', 'Autonomous-System', 'Bank-Account', 'Campaign',
@@ -545,37 +617,37 @@
 
         const entityData = {
             categories: {
-                'STIX Domain Objects': {
+                'STIX Domain Objects (SDO + Extended)': {
                     type: 'sdo',
                     entities: [
+                        // STIX Domain Objects (SDO)
                         'Attack Pattern', 'Campaign', 'Course of Action', 'Grouping',
                         'Identity', 'Incident', 'Indicator', 'Infrastructure', 
                         'Intrusion Set', 'Location', 'Malware', 'Malware Analysis',
                         'Note', 'Opinion', 'Report', 'Threat Actor Group',
-                        'Threat Actor Individual', 'Tool', 'Vulnerability'
+                        'Threat Actor Individual', 'Tool', 'Vulnerability',
+                        // Extended SDO
+                        'Case', 'Channel', 'Event', 'Narrative'
                     ].sort()
                 },
-                'STIX Cyber Observables': {
-                    type: 'sco',
+                'Observables (SCO + Extended)': {
+                    type: 'observables',
                     entities: [
+                        // STIX Cyber Observables (SCO)
                         'Artifact', 'Autonomous-System', 'Directory', 'Domain-Name',
                         'Email-Addr', 'Email-Message', 'Email-Mime-Part-Type', 'File',
                         'Hostname', 'IPv4-Addr', 'IPv6-Addr', 'Mac-Addr', 'Mutex',
                         'Network-Traffic', 'Process', 'Software', 'URL', 'User-Account',
-                        'Windows-Registry-Key', 'Windows-Registry-Value-Type', 'X509-Certificate'
-                    ].sort()
-                },
-                'Extended Types': {
-                    type: 'extended',
-                    entities: [
-                        'Bank-Account', 'Case', 'Channel', 'Credential', 'Cryptocurrency-Wallet',
-                        'Event', 'Media-Content', 'Narrative', 'Organization', 'Payment-Card',
+                        'Windows-Registry-Key', 'Windows-Registry-Value-Type', 'X509-Certificate',
+                        // Extended SCO
+                        'Bank-Account', 'Credential', 'Cryptocurrency-Wallet',
+                        'Media-Content', 'Organization', 'Payment-Card',
                         'Phone-Number', 'System', 'Text', 'User-Agent'
                     ].sort()
                 }
             },
             relationships: {
-                'Threat Actor Group': {
+'Threat Actor Group': {
                     outgoing: [
                         { type: 'attributed-to', targets: ['Campaign', 'Identity', 'Intrusion Set'] },
                         { type: 'compromises', targets: ['Infrastructure', 'System'] },
@@ -1089,6 +1161,36 @@
         let dragOffsetX = 0;
         let dragOffsetY = 0;
 
+        // Preload all icon images
+        const iconImages = {};
+        let iconsLoaded = 0;
+        let totalIcons = 0;
+
+        function preloadIcons() {
+            const uniqueIcons = new Set(Object.values(entityIcons));
+            totalIcons = uniqueIcons.size;
+            
+            Object.entries(entityIcons).forEach(([entity, dataUrl]) => {
+                if (!iconImages[entity]) {
+                    const img = new Image();
+                    img.onload = () => {
+                        iconsLoaded++;
+                        if (iconsLoaded === Object.keys(entityIcons).length) {
+                            console.log('✓ All entity icons loaded');
+                        }
+                    };
+                    img.onerror = () => {
+                        console.warn(`Failed to load icon for ${entity}`);
+                    };
+                    img.src = dataUrl;
+                    iconImages[entity] = img;
+                }
+            });
+        }
+
+        // Preload icons immediately
+        preloadIcons();
+
         function resizeCanvas() {
             canvas.width = 2000;
             canvas.height = 1400;
@@ -1189,6 +1291,7 @@
         });
 
         // Initialize entity list
+        initializeEntityList();
         function initializeEntityList() {
             const container = document.getElementById('entityCategories');
             container.innerHTML = '';
@@ -1231,7 +1334,34 @@
             updateInfoPanel(entityName);
         }
 
-        // Draw relationship graph with draggable nodes
+        // FIX: Validate node exists before drawing connections
+        function validateNode(nodeName) {
+            if (!nodes[nodeName]) {
+                console.warn(`Node not found: ${nodeName}`);
+                return false;
+            }
+            
+            const node = nodes[nodeName];
+            
+            if (typeof node.x !== 'number' || typeof node.y !== 'number' || typeof node.radius !== 'number') {
+                console.warn(`Node has non-numeric properties: ${nodeName}`, node);
+                return false;
+            }
+            
+            if (isNaN(node.x) || isNaN(node.y) || isNaN(node.radius)) {
+                console.warn(`Node has NaN values: ${nodeName}`, node);
+                return false;
+            }
+            
+            if (node.radius <= 0) {
+                console.warn(`Node has invalid radius: ${nodeName}`, node.radius);
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Draw relationship graph with draggable nodes and icons
         function drawRelationshipGraph(entityName) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1264,10 +1394,11 @@
             // Adaptive sizing
             const baseRadius = Math.min(550, 250 + (totalCount * 12));
             const radius = baseRadius * zoomLevel;
-            const centerNodeSize = 65 * zoomLevel;
-            const satelliteNodeSize = 48 * zoomLevel;
+            const centerNodeSize = 45 * zoomLevel;  // Reduced from 65
+            const satelliteNodeSize = 35 * zoomLevel;  // Reduced from 48
 
             // Initialize center node if not exists
+        initializeEntityList();
             if (!nodes[entityName]) {
                 nodes[entityName] = { x: centerX, y: centerY, radius: centerNodeSize };
             }
@@ -1289,6 +1420,7 @@
 
             outgoingArray.forEach(([target, types], index) => {
                 // Initialize node position if not exists
+        initializeEntityList();
                 if (!nodes[target]) {
                     const angle = index * outgoingAngleStep - Math.PI / 2;
                     nodes[target] = {
@@ -1300,8 +1432,20 @@
 
                 const node = nodes[target];
 
+                // FIX: Validate both center and target nodes exist before drawing
+                // But always draw the target node itself
+                const centerValid = validateNode(entityName);
+                const targetValid = validateNode(target);
+                
+                if (!centerValid || !targetValid) {
+                    console.warn(`Skipping connection line: ${entityName} -> ${target} (center: ${centerValid}, target: ${targetValid})`);
+                    // Still draw the target node even if we skip the connection
+                    drawNode(node.x, node.y, node.radius, target, '#00838f', '#00acc1');
+                    return;
+                }
+
                 // Draw line
-                ctx.strokeStyle = '#42a5f5';
+                ctx.strokeStyle = '#00acc1';
                 ctx.lineWidth = 3 * zoomLevel;
                 ctx.beginPath();
                 ctx.moveTo(nodes[entityName].x, nodes[entityName].y);
@@ -1314,7 +1458,7 @@
                 const arrowX = node.x - Math.cos(angle) * node.radius;
                 const arrowY = node.y - Math.sin(angle) * node.radius;
                 
-                ctx.fillStyle = '#42a5f5';
+                ctx.fillStyle = '#00acc1';
                 ctx.beginPath();
                 ctx.moveTo(arrowX, arrowY);
                 ctx.lineTo(arrowX - arrowSize * Math.cos(angle - Math.PI / 6), arrowY - arrowSize * Math.sin(angle - Math.PI / 6));
@@ -1326,10 +1470,10 @@
                 const midX = (nodes[entityName].x + node.x) / 2;
                 const midY = (nodes[entityName].y + node.y) / 2;
                 
-                drawRelationshipLabel(midX, midY, types, '#90caf9', '#42a5f5');
+                drawRelationshipLabel(midX, midY, types, '#00bcd4', '#00acc1');
 
                 // Draw target node
-                drawNode(node.x, node.y, node.radius, target, '#1976d2', '#42a5f5');
+                drawNode(node.x, node.y, node.radius, target, '#00838f', '#00acc1');
             });
 
             // Draw incoming relationships
@@ -1350,6 +1494,7 @@
 
             incomingArray.forEach(([source, types], index) => {
                 // Initialize node position if not exists
+        initializeEntityList();
                 const nodeKey = `incoming_${source}`;
                 if (!nodes[nodeKey]) {
                     const angle = index * incomingAngleStep + Math.PI / 4;
@@ -1362,8 +1507,20 @@
 
                 const node = nodes[nodeKey];
 
+                // FIX: Validate both source and center nodes exist before drawing
+                // But always draw the source node itself
+                const sourceValid = validateNode(nodeKey);
+                const centerValid = validateNode(entityName);
+                
+                if (!sourceValid || !centerValid) {
+                    console.warn(`Skipping connection line: ${source} -> ${entityName} (source: ${sourceValid}, center: ${centerValid})`);
+                    // Still draw the source node even if we skip the connection
+                    drawNode(node.x, node.y, node.radius, source, '#6a1b9a', '#9c27b0');
+                    return;
+                }
+
                 // Draw line
-                ctx.strokeStyle = '#ab47bc';
+                ctx.strokeStyle = '#9c27b0';
                 ctx.lineWidth = 3 * zoomLevel;
                 ctx.beginPath();
                 ctx.moveTo(node.x, node.y);
@@ -1377,7 +1534,7 @@
                 const arrowX = nodes[entityName].x - Math.cos(angle) * arrowDistance;
                 const arrowY = nodes[entityName].y - Math.sin(angle) * arrowDistance;
                 
-                ctx.fillStyle = '#ab47bc';
+                ctx.fillStyle = '#9c27b0';
                 ctx.beginPath();
                 ctx.moveTo(arrowX, arrowY);
                 ctx.lineTo(arrowX - arrowSize * Math.cos(angle - Math.PI / 6), arrowY - arrowSize * Math.sin(angle - Math.PI / 6));
@@ -1389,17 +1546,23 @@
                 const midX = (node.x + nodes[entityName].x) / 2;
                 const midY = (node.y + nodes[entityName].y) / 2;
                 
-                drawRelationshipLabel(midX, midY, types, '#ce93d8', '#ab47bc');
+                drawRelationshipLabel(midX, midY, types, '#ba68c8', '#9c27b0');
 
                 // Draw source node
-                drawNode(node.x, node.y, node.radius, source, '#7b1fa2', '#ab47bc');
+                drawNode(node.x, node.y, node.radius, source, '#6a1b9a', '#9c27b0');
             });
 
             // Draw center entity (on top)
-            drawNode(nodes[entityName].x, nodes[entityName].y, nodes[entityName].radius, entityName, '#1976d2', '#90caf9', true);
+            drawNode(nodes[entityName].x, nodes[entityName].y, nodes[entityName].radius, entityName, '#00838f', '#00bcd4', true);
         }
 
         function drawNode(x, y, radius, label, fillColor, strokeColor, isCenter = false) {
+            // FIX: Validate coordinates before drawing
+            if (isNaN(x) || isNaN(y) || isNaN(radius)) {
+                console.warn(`Invalid node coordinates for ${label}: x=${x}, y=${y}, radius=${radius}`);
+                return;
+            }
+
             ctx.fillStyle = fillColor;
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -1409,19 +1572,34 @@
             ctx.lineWidth = (isCenter ? 5 : 3) * zoomLevel;
             ctx.stroke();
 
+            // Draw icon centered in circle (LARGER - can extend beyond circle)
+            const iconDataUrl = entityIcons[label];
+            if (iconDataUrl && iconImages[label]) {
+                const iconSize = (isCenter ? 44 : 36) * zoomLevel;  // Double the size (was 22/18)
+                const iconX = x - iconSize / 2;
+                const iconY = y - iconSize / 2;
+                ctx.drawImage(iconImages[label], iconX, iconY, iconSize, iconSize);
+            }
+
+            // Draw label BELOW the circle
             ctx.fillStyle = '#ffffff';
-            ctx.font = `bold ${(isCenter ? 17 : 14) * zoomLevel}px "IBM Plex Sans"`;
+            ctx.font = `bold ${(isCenter ? 14 : 12) * zoomLevel}px "IBM Plex Sans"`;  // Bigger and bold
             ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            ctx.textBaseline = 'top';
             
-            const lines = wrapText(ctx, label, (isCenter ? 110 : 85) * zoomLevel);
-            const lineHeight = (isCenter ? 22 : 18) * zoomLevel;
+            const lines = wrapText(ctx, label, (isCenter ? 140 : 110) * zoomLevel);
+            const startY = y + radius + (8 * zoomLevel);  // Slightly more spacing
             lines.forEach((line, i) => {
-                ctx.fillText(line, x, y - (lines.length - 1) * lineHeight/2 + i * lineHeight);
+                ctx.fillText(line, x, startY + i * (isCenter ? 16 : 14) * zoomLevel);
             });
         }
 
         function drawRelationshipLabel(x, y, types, textColor, borderColor) {
+            // FIX: Validate coordinates
+            if (isNaN(x) || isNaN(y)) {
+                return;
+            }
+
             ctx.font = `bold ${15 * zoomLevel}px "IBM Plex Sans"`;
             ctx.fillStyle = textColor;
             ctx.textAlign = 'center';
@@ -1472,6 +1650,15 @@
             return lines;
         }
 
+        // Helper function to generate icon HTML for info panel
+        function getIconHtml(entityName, size = 16) {
+            const iconDataUrl = entityIcons[entityName];
+            if (iconDataUrl) {
+                return `<img src="${iconDataUrl}" style="width: ${size}px; height: ${size}px; vertical-align: middle; margin-right: 4px;" alt="${entityName}"/>`;
+            }
+            return '';
+        }
+
         // Update info panel
         function updateInfoPanel(entityName) {
             const panel = document.getElementById('infoPanel');
@@ -1491,8 +1678,11 @@
             const incomingCount = relationships.incoming?.length || 0;
             const totalRels = outgoingCount + incomingCount;
 
+            // Get icon for entity
+            const entityIcon = entityIcons[entityName] || 'ðŸ“¦';
+
             let html = `
-                <h2>${entityName}</h2>
+                <h2>${entityIconHtml}${entityName}</h2>
                 
                 <div class="stats">
                     <div class="stat-card">
@@ -1521,11 +1711,12 @@
                 
                 relationships.outgoing.forEach(rel => {
                     rel.targets.forEach(target => {
+                        const targetIcon = entityIcons[target] || 'ðŸ“¦';
                         html += `
                             <div class="relationship-item" onclick="selectEntity('${target}')">
                                 <div class="relationship-type">${rel.type}</div>
                                 <div class="relationship-target">
-                                    ${entityName} <span class="arrow">→</span> ${target}
+                                    ${entityIconHtml}${entityName} <span class="arrow">→</span> ${targetIconHtml}${target}
                                 </div>
                             </div>
                         `;
@@ -1546,11 +1737,12 @@
                 
                 relationships.incoming.forEach(rel => {
                     rel.sources.forEach(source => {
+                        const sourceIcon = entityIcons[source] || 'ðŸ“¦';
                         html += `
                             <div class="relationship-item incoming-rel" onclick="selectEntity('${source}')">
                                 <div class="relationship-type">${rel.type}</div>
                                 <div class="relationship-target">
-                                    ${source} <span class="arrow">→</span> ${entityName}
+                                    ${sourceIconHtml}${source} <span class="arrow">→</span> ${entityIconHtml}${entityName}
                                 </div>
                             </div>
                         `;
@@ -1564,16 +1756,16 @@
                 <div class="legend">
                     <h4>Legend</h4>
                     <div class="legend-item">
-                        <div class="legend-color" style="background: #1976d2; border: 2px solid #42a5f5;"></div>
+                        <div class="legend-color" style="background: #00838f; border: 2px solid #00acc1;"></div>
                         <span>Outgoing: This entity initiates the relationship</span>
                     </div>
                     <div class="legend-item">
-                        <div class="legend-color" style="background: #7b1fa2; border: 2px solid #ab47bc;"></div>
+                        <div class="legend-color" style="background: #6a1b9a; border: 2px solid #9c27b0;"></div>
                         <span>Incoming: Other entities relate to this one</span>
                     </div>
                     <div class="legend-item">
-                        <div class="legend-color" style="background: transparent; border: 2px solid #90caf9;"></div>
-                        <span>💡 Drag nodes to reposition them</span>
+                        <div class="legend-color" style="background: transparent; border: 2px solid #00bcd4;"></div>
+                        <span>💡 Drag nodes to reposition • Icons show entity types</span>
                     </div>
                 </div>
             `;
@@ -1611,6 +1803,11 @@
         });
 
         // Initialize
+        console.log('OpenCTI Relationship Explorer v0.1.2.12 initialized');
+        console.log('✓ OpenCTI official SVG icons (base64 embedded)');
+        console.log('✓ All 54 entity types with proper icons');
+        console.log('✓ Equal height panels (left, middle, right)');
+        console.log('✓ SDO (23 entities) / Observables (31 entities)');
         initializeEntityList();
     </script>
 </body>
