@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenCTI Relationship Explorer - Interactive Diagram</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a1929;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100vw;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: #001e3c;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border: 1px solid #1e4976;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #90caf9;
+            font-size: 1.1em;
+            font-weight: 400;
+        }
+
+        .controls {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+            background: #001e3c;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #1e4976;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #1e4976;
+            border-radius: 4px;
+            background: #0a1929;
+            color: #ffffff;
+            font-size: 15px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: #90caf9;
+            box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.1);
+        }
+
+        #searchInput::placeholder {
+            color: #546e7a;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 1px solid #1e4976;
+            border-radius: 4px;
+            background: #0a1929;
+            color: #90caf9;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+
+        .filter-btn:hover {
+            background: #001e3c;
+            border-color: #90caf9;
+        }
+
+        .filter-btn.active {
+            background: #1976d2;
+            border-color: #1976d2;
+            color: #ffffff;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 320px 1fr 380px;
+            gap: 20px;
+            min-height: 900px;
+        }
+
+        @media (max-width: 1600px) {
+            .main-content {
+                grid-template-columns: 280px 1fr 340px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .entity-list {
+            background: #001e3c;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #1e4976;
+            overflow-y: auto;
+            max-height: calc(100vh - 240px);
+        }
+
+        .entity-list h2 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #90caf9;
+            font-weight: 600;
+        }
+
+        .entity-category {
+            margin-bottom: 24px;
+        }
+
+        .category-title {
+            font-size: 0.85em;
+            color: #546e7a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            padding-left: 8px;
+        }
+
+        .entity-item {
+            padding: 12px 16px;
+            margin-bottom: 6px;
+            background: #0a1929;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+            font-weight: 500;
+            color: #e3f2fd;
+        }
+
+        .entity-item:hover {
+            background: #0d47a1;
+            border-left-color: #90caf9;
+            transform: translateX(4px);
+            color: #ffffff;
+        }
+
+        .entity-item.selected {
+            background: #1976d2;
+            border-left-color: #90caf9;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .canvas-area {
+            background: #001e3c;
+            border-radius: 8px;
+            padding: 40px;
+            border: 1px solid #1e4976;
+            position: relative;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: default;
+        }
+
+        .canvas-wrapper {
+            width: 100%;
+            height: 100%;
+            min-width: 1800px;
+            min-height: 1200px;
+            position: relative;
+        }
+
+        #canvas {
+            display: block;
+            cursor: grab;
+        }
+
+        #canvas.dragging {
+            cursor: grabbing;
+        }
+
+        .info-panel {
+            background: #001e3c;
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid #1e4976;
+            overflow-y: auto;
+            max-height: calc(100vh - 240px);
+        }
+
+        .info-panel h2 {
+            font-size: 1.5em;
+            margin-bottom: 16px;
+            color: #90caf9;
+            font-weight: 600;
+        }
+
+        .info-section {
+            margin-bottom: 28px;
+        }
+
+        .info-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            color: #90caf9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .relationship-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: #0a1929;
+            border-radius: 4px;
+            border-left: 3px solid #42a5f5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .relationship-item:hover {
+            background: #0d47a1;
+            transform: translateX(4px);
+        }
+
+        .relationship-item.incoming-rel {
+            border-left-color: #ab47bc;
+        }
+
+        .relationship-type {
+            color: #90caf9;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .relationship-target {
+            color: #b0bec5;
+            font-size: 13px;
+        }
+
+        .arrow {
+            color: #546e7a;
+            margin: 0 6px;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge.outgoing {
+            background: rgba(66, 165, 245, 0.2);
+            color: #42a5f5;
+        }
+
+        .badge.incoming {
+            background: rgba(171, 71, 188, 0.2);
+            color: #ce93d8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #546e7a;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.4;
+        }
+
+        .empty-state h3 {
+            color: #90caf9;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 100px;
+            padding: 16px;
+            background: #0a1929;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #1e4976;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #42a5f5;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #90caf9;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .legend {
+            margin-top: 24px;
+            padding: 16px;
+            background: #0a1929;
+            border-radius: 4px;
+            border: 1px solid #1e4976;
+        }
+
+        .legend h4 {
+            font-size: 0.9em;
+            color: #90caf9;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #b0bec5;
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a1929;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e4976;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2979ff;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+            background: rgba(10, 25, 41, 0.95);
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #1e4976;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            background: #0a1929;
+            border: 1px solid #1e4976;
+            border-radius: 4px;
+            color: #90caf9;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .zoom-btn:hover {
+            background: #1976d2;
+            color: #ffffff;
+        }
+
+        .complexity-warning {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(25, 118, 210, 0.95);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 10;
+            border: 1px solid #42a5f5;
+        }
+
+        .help-text {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 25, 41, 0.95);
+            color: #90caf9;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            z-index: 10;
+            border: 1px solid #1e4976;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 OpenCTI Relationship Explorer</h1>
+            <p class="subtitle">Interactive visualization with draggable nodes - Click and drag any entity to reposition</p>
+        </header>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search entities..." />
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">All Types</button>
+                <button class="filter-btn" data-filter="sdo">SDO</button>
+                <button class="filter-btn" data-filter="sco">SCO</button>
+                <button class="filter-btn" data-filter="extended">Extended</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="entity-list" id="entityList">
+                <h2>Entity Types</h2>
+                <div id="entityCategories"></div>
+            </div>
+
+            <div class="canvas-area" id="canvasArea">
+                <div class="canvas-wrapper">
+                    <canvas id="canvas"></canvas>
+                </div>
+                <div class="help-text">💡 Click and drag nodes to reposition them</div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoomIn" title="Zoom In">+</button>
+                    <button class="zoom-btn" id="zoomOut" title="Zoom Out">−</button>
+                    <button class="zoom-btn" id="zoomReset" title="Reset View">⟲</button>
+                    <button class="zoom-btn" id="resetPositions" title="Reset Positions">◯</button>
+                </div>
+            </div>
+
+            <div class="info-panel" id="infoPanel">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                    </svg>
+                    <h3>Select an entity to explore</h3>
+                    <p>Click on any entity type from the list to see its relationships</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // Complete relationship data with all entities
+        const allEntities = [
+            'Artifact', 'Attack Pattern', 'Autonomous-System', 'Bank-Account', 'Campaign',
+            'Case', 'Channel', 'Course of Action', 'Credential', 'Cryptocurrency-Wallet',
+            'Directory', 'Domain-Name', 'Email-Addr', 'Email-Message', 'Email-Mime-Part-Type',
+            'Event', 'File', 'Grouping', 'Hostname', 'Identity', 'Incident', 'Indicator',
+            'Infrastructure', 'Intrusion Set', 'IPv4-Addr', 'IPv6-Addr', 'Location',
+            'Mac-Addr', 'Malware', 'Malware Analysis', 'Media-Content', 'Mutex',
+            'Narrative', 'Network-Traffic', 'Note', 'Opinion', 'Organization',
+            'Payment-Card', 'Phone-Number', 'Process', 'Report', 'Software', 'System',
+            'Text', 'Threat Actor Group', 'Threat Actor Individual', 'Tool', 'URL',
+            'User-Account', 'User-Agent', 'Vulnerability', 'Windows-Registry-Key',
+            'Windows-Registry-Value-Type', 'X509-Certificate'
+        ].sort();
+
+        const entityData = {
+            categories: {
+                'STIX Domain Objects': {
+                    type: 'sdo',
+                    entities: [
+                        'Attack Pattern', 'Campaign', 'Course of Action', 'Grouping',
+                        'Identity', 'Incident', 'Indicator', 'Infrastructure', 
+                        'Intrusion Set', 'Location', 'Malware', 'Malware Analysis',
+                        'Note', 'Opinion', 'Report', 'Threat Actor Group',
+                        'Threat Actor Individual', 'Tool', 'Vulnerability'
+                    ].sort()
+                },
+                'STIX Cyber Observables': {
+                    type: 'sco',
+                    entities: [
+                        'Artifact', 'Autonomous-System', 'Directory', 'Domain-Name',
+                        'Email-Addr', 'Email-Message', 'Email-Mime-Part-Type', 'File',
+                        'Hostname', 'IPv4-Addr', 'IPv6-Addr', 'Mac-Addr', 'Mutex',
+                        'Network-Traffic', 'Process', 'Software', 'URL', 'User-Account',
+                        'Windows-Registry-Key', 'Windows-Registry-Value-Type', 'X509-Certificate'
+                    ].sort()
+                },
+                'Extended Types': {
+                    type: 'extended',
+                    entities: [
+                        'Bank-Account', 'Case', 'Channel', 'Credential', 'Cryptocurrency-Wallet',
+                        'Event', 'Media-Content', 'Narrative', 'Organization', 'Payment-Card',
+                        'Phone-Number', 'System', 'Text', 'User-Agent'
+                    ].sort()
+                }
+            },
+            relationships: {
+                'Threat Actor Group': {
+                    outgoing: [
+                        { type: 'attributed-to', targets: ['Campaign', 'Identity', 'Intrusion Set'] },
+                        { type: 'compromises', targets: ['Infrastructure', 'System'] },
+                        { type: 'consists-of', targets: ['Threat Actor Individual'] },
+                        { type: 'controls', targets: ['Infrastructure'] },
+                        { type: 'cooperates-with', targets: ['Threat Actor Group'] },
+                        { type: 'employs', targets: ['Attack Pattern', 'Threat Actor Individual'] },
+                        { type: 'exploits', targets: ['Vulnerability'] },
+                        { type: 'impersonates', targets: ['Identity'] },
+                        { type: 'investigates', targets: ['Incident'] },
+                        { type: 'located-at', targets: ['Location'] },
+                        { type: 'operates-in', targets: ['Location'] },
+                        { type: 'originates-from', targets: ['Location'] },
+                        { type: 'owns', targets: ['Infrastructure'] },
+                        { type: 'part-of', targets: ['Intrusion Set'] },
+                        { type: 'targets', targets: ['Identity', 'Location', 'Vulnerability'] },
+                        { type: 'uses', targets: ['Attack Pattern', 'Infrastructure', 'Malware', 'Tool'] }
+                    ],
+                    incoming: [
+                        { type: 'attributed-to', sources: ['Campaign', 'Incident', 'Intrusion Set'] },
+                        { type: 'cooperates-with', sources: ['Threat Actor Group'] },
+                        { type: 'indicates', sources: ['Indicator'] },
+                        { type: 'investigates', sources: ['Case', 'Incident'] },
+                        { type: 'part-of', sources: ['Threat Actor Individual'] }
+                    ]
+                },
+                'Threat Actor Individual': {
+                    outgoing: [
+                        { type: 'affiliated-with', targets: ['Identity', 'Organization'] },
+                        { type: 'located-at', targets: ['Location'] },
+                        { type: 'participates-in', targets: ['Campaign'] },
+                        { type: 'part-of', targets: ['Threat Actor Group'] },
+                        { type: 'targets', targets: ['Identity', 'Location'] },
+                        { type: 'uses', targets: ['Attack Pattern', 'Malware', 'Tool'] }
+                    ],
+                    incoming: [
+                        { type: 'consists-of', sources: ['Threat Actor Group'] },
+                        { type: 'employs', sources: ['Threat Actor Group'] },
+                        { type: 'indicates', sources: ['Indicator'] },
+                        { type: 'investigates', sources: ['Case'] }
+                    ]
+                },
+                'Intrusion Set': {
+                    outgoing: [
+                        { type: 'attributed-to', targets: ['Identity', 'Threat Actor Group', 'Threat Actor Individual'] },
+                        { type: 'compromises', targets: ['Infrastructure'] },
+                        { type: 'exploits', targets: ['Vulnerability'] },
+                        { type: 'operates-in', targets: ['Location'] },
+                        { type: 'originates-from', targets: ['Location'] },
+                        { type: 'targets', targets: ['Identity', 'Location', 'Vulnerability'] },
+                        { type: 'uses', targets: ['Attack Pattern', 'Infrastructure', 'Malware', 'Tool'] }
+                    ],
+                    incoming: [
+                        { type: 'attributed-to', sources: ['Campaign', 'Incident', 'Threat Actor Group'] },
+                        { type: 'indicates', sources: ['Indicator'] },
+                        { type: 'part-of', sources: ['Campaign', 'Threat Actor Group'] }
+                    ]
+                },
+                'Campaign': {
+                    outgoing: [
+                        { type: 'attributed-to', targets: ['Intrusion Set', 'Threat Actor Group', 'Threat Actor Individual'] },
+                        { type: 'compromises', targets: ['Infrastructure'] },
+                        { type: 'delivers', targets: ['Malware'] },
+                        { type: 'exploits', targets: ['Vulnerability'] },
+                        { type: 'originates-from', targets: ['Location'] },
+                        { type: 'part-of', targets: ['Campaign', 'Intrusion Set'] },
+                        { type: 'targets', targets: ['Identity', 'Location', 'Vulnerability'] },
+                        { type: 'uses', targets: ['Attack Pattern', 'Infrastructure', 'Malware', 'Tool'] }
+                    ],
+                    incoming: [
+                        { type: 'attributed-to', sources: ['Incident', 'Threat Actor Group'] },
+                        { type: 'indicates', sources: ['Indicator'] },
+                        { type: 'investigates', sources: ['Case'] },
+                        { type: 'participates-in', sources: ['Identity', 'Threat Actor Individual'] },
+                        { type: 'part-of', sources: ['Campaign'] }
+                    ]
+                },
+                'Incident': {
+                    outgoing: [
+                        { type: 'attributed-to', targets: ['Campaign', 'Intrusion Set', 'Threat Actor Group', 'Threat Actor Individual'] },
+                        { type: 'compromises', targets: ['Identity', 'Infrastructure', 'System'] },
+                        { type: 'exploits', targets: ['Vulnerability'] },
+                        { type: 'investigates', targets: ['Threat Actor Group'] },
+                        { type: 'located-at', targets: ['Location'] },
+                        { type: 'targets', targets: ['Identity'] },
+                        { type: 'uses', targets: ['Attack Pattern', 'Malware', 'Tool'] }
+                    ],
+                    incoming: [
+                        { type: 'amplifies', sources: ['Event'] },
+                        { type: 'investigates', sources: ['Case', 'Threat Actor Group'] }
+                    ]
+                },
+                'Malware': {
+                    outgoing: [
+                        { type: 'beacons-to', targets: ['Infrastructure'] },
+                        { type: 'downloads', targets: ['File', 'Malware', 'Tool'] },
+                        { type: 'drops', targets: ['File', 'Malware', 'Tool'] },
+                        { type: 'exfiltrates-to', targets: ['Infrastructure'] },
+                        { type: 'exploits', targets: ['Vulnerability'] },
+                        { type: 'intercepts', targets: ['Network-Traffic'] },
+                        { type: 'targets', targets: ['Vulnerability'] },
+                        { type: 'uses', targets: ['Attack Pattern', 'Infrastructure'] },
+                        { type: 'variant-of', targets: ['Malware'] }
+                    ],
+                    incoming: [
+                        { type: 'characterizes', sources: ['Malware Analysis'] },
+                        { type: 'delivers', sources: ['Campaign', 'Infrastructure', 'Tool'] },
+                        { type: 'downloads', sources: ['Malware', 'Tool'] },
+                        { type: 'drops', sources: ['Malware', 'Tool'] },
+                        { type: 'dynamic-analysis-of', sources: ['Malware Analysis'] },
+                        { type: 'hosts', sources: ['Infrastructure'] },
+                        { type: 'indicates', sources: ['Indicator'] },
+                        { type: 'investigates', sources: ['Case'] },
+                        { type: 'mitigates', sources: ['Course of Action'] },
+                        { type: 'remediates', sources: ['Course of Action'] },
+                        { type: 'sample', sources: ['Artifact', 'File'] },
+                        { type: 'static-analysis-of', sources: ['Malware Analysis'] },
+                        { type: 'uses', sources: ['Campaign', 'Event', 'Incident', 'Intrusion Set', 'Threat Actor Group', 'Threat Actor Individual'] },
+                        { type: 'variant-of', sources: ['Malware'] }
+                    ]
+                },
+                'Tool': {
+                    outgoing: [
+                        { type: 'beacons-to', targets: ['Infrastructure'] },
+                        { type: 'delivers', targets: ['Malware'] },
+                        { type: 'downloads', targets: ['Malware', 'Tool'] },
+                        { type: 'exploits', targets: ['Vulnerability'] },
+                        { type: 'targets', targets: ['Vulnerability'] },
+                        { type: 'uses', targets: ['Attack Pattern', 'Infrastructure'] },
+                        { type: 'variant-of', targets: ['Tool'] }
+                    ],
+                    incoming: [
+                        { type: 'delivers', sources: ['Campaign', 'Infrastructure'] },
+                        { type: 'downloads', sources: ['Malware', 'Tool'] },
+                        { type: 'drops', sources: ['Malware'] },
+                        { type: 'dynamic-analysis-of', sources: ['Malware Analysis'] },
+                        { type: 'hosts', sources: ['Infrastructure'] },
+                        { type: 'indicates', sources: ['Indicator'] },
+                        { type: 'mitigates', sources: ['Course of Action'] },
+                        { type: 'static-analysis-of', sources: ['Malware Analysis'] },
+                        { type: 'uses', sources: ['Campaign', 'Event', 'Incident', 'Intrusion Set', 'Threat Actor Group', 'Threat Actor Individual'] },
+                        { type: 'variant-of', sources: ['Tool'] }
+                    ]
+                },
+                'Attack Pattern': {
+                    outgoing: [
+                        { type: 'subtechnique-of', targets: ['Attack Pattern'] },
+                        { type: 'targets', targets: ['Vulnerability'] }
+                    ],
+                    incoming: [
+                        { type: 'employs', sources: ['Threat Actor Group'] },
+                        { type: 'indicates', sources: ['Indicator'] },
+                        { type: 'mitigates', sources: ['Course of Action'] },
+                        { type: 'subtechnique-of', sources: ['Attack Pattern'] },
+                        { type: 'uses', sources: ['Campaign', 'Event', 'Incident', 'Intrusion Set', 'Malware', 'Threat Actor Group', 'Threat Actor Individual', 'Tool'] }
+                    ]
+                },
+                'Course of Action': {
+                    outgoing: [
+                        { type: 'mitigates', targets: ['Attack Pattern', 'Malware', 'Tool', 'Vulnerability'] },
+                        { type: 'remediates', targets: ['Malware', 'Vulnerability'] }
+                    ],
+                    incoming: []
+                },
+                'Infrastructure': {
+                    outgoing: [
+                        { type: 'belongs-to', targets: ['Identity'] },
+                        { type: 'communicates-with', targets: ['Infrastructure', 'System'] },
+                        { type: 'consists-of', targets: ['Domain-Name', 'Infrastructure', 'IPv4-Addr', 'IPv6-Addr', 'URL'] },
+                        { type: 'delivers', targets: ['Malware', 'Tool'] },
+                        { type: 'has', targets: ['Vulnerability'] },
+                        { type: 'hosts', targets: ['Channel', 'Malware', 'Tool'] },
+                        { type: 'intercepts', targets: ['Network-Traffic'] },
+                        { type: 'located-at', targets: ['Location'] },
+                        { type: 'resolves-to', targets: ['IPv4-Addr', 'IPv6-Addr'] }
+                    ],
+                    incoming: [
+                        { type: 'beacons-to', sources: ['Malware', 'Tool'] },
+                        { type: 'communicates-with', sources: ['Infrastructure', 'System'] },
+                        { type: 'compromises', sources: ['Campaign', 'Incident', 'Intrusion Set', 'Threat Actor Group'] },
+                        { type: 'consists-of', sources: ['Infrastructure'] },
+                        { type: 'controls', sources: ['Threat Actor Group'] },
+                        { type: 'exfiltrates-to', sources: ['Malware'] },
+                        { type: 'indicates', sources: ['Indicator'] },
+                        { type: 'investigates', sources: ['Case'] },
+                        { type: 'owns', sources: ['Identity', 'Threat Actor Group'] },
+                        { type: 'part-of', sources: ['System'] },
+                        { type: 'uses', sources: ['Campaign', 'Intrusion Set', 'Malware', 'Threat Actor Group', 'Threat Actor Individual', 'Tool'] }
+                    ]
+                },
+                'Vulnerability': {
+                    outgoing: [],
+                    incoming: [
+                        { type: 'exploits', sources: ['Campaign', 'Incident', 'Intrusion Set', 'Malware', 'Threat Actor Group', 'Threat Actor Individual', 'Tool'] },
+                        { type: 'has', sources: ['Infrastructure', 'System'] },
+                        { type: 'mitigates', sources: ['Course of Action'] },
+                        { type: 'remediates', sources: ['Course of Action'] },
+                        { type: 'targets', sources: ['Attack Pattern', 'Campaign', 'Intrusion Set', 'Malware', 'Threat Actor Group', 'Threat Actor Individual', 'Tool'] }
+                    ]
+                },
+                'Identity': {
+                    outgoing: [
+                        { type: 'authored-by', targets: ['Narrative', 'Note', 'Opinion', 'Report'] },
+                        { type: 'located-at', targets: ['Location'] },
+                        { type: 'owns', targets: ['Infrastructure', 'System'] },
+                        { type: 'participates-in', targets: ['Campaign', 'Event'] },
+                        { type: 'publishes', targets: ['Narrative'] }
+                    ],
+                    incoming: [
+                        { type: 'affiliated-with', sources: ['Threat Actor Individual'] },
+                        { type: 'attributed-to', sources: ['Campaign', 'Intrusion Set', 'Threat Actor Group', 'Threat Actor Individual'] },
+                        { type: 'authored-by', sources: ['Report'] },
+                        { type: 'belongs-to', sources: ['Infrastructure', 'System', 'User-Account'] },
+                        { type: 'compromises', sources: ['Incident'] },
+                        { type: 'impersonates', sources: ['Threat Actor Group'] },
+                        { type: 'targets', sources: ['Campaign', 'Incident', 'Intrusion Set', 'Threat Actor Group', 'Threat Actor Individual'] }
+                    ]
+                },
+                'Location': {
+                    outgoing: [],
+                    incoming: [
+                        { type: 'located-at', sources: ['Identity', 'Incident', 'Infrastructure', 'Threat Actor Group', 'Threat Actor Individual'] },
+                        { type: 'operates-in', sources: ['Intrusion Set', 'Threat Actor Group'] },
+                        { type: 'originates-from', sources: ['Campaign', 'Intrusion Set', 'Threat Actor Group'] },
+                        { type: 'targets', sources: ['Campaign', 'Intrusion Set', 'Threat Actor Group', 'Threat Actor Individual'] }
+                    ]
+                },
+                'Indicator': {
+                    outgoing: [
+                        { type: 'based-on', targets: ['Artifact', 'Domain-Name', 'Email-Addr', 'File', 'IPv4-Addr', 'IPv6-Addr', 'URL'] },
+                        { type: 'derived-from', targets: ['Indicator'] },
+                        { type: 'indicates', targets: ['Attack Pattern', 'Campaign', 'Infrastructure', 'Intrusion Set', 'Malware', 'Threat Actor Group', 'Threat Actor Individual', 'Tool'] }
+                    ],
+                    incoming: [
+                        { type: 'derived-from', sources: ['Indicator'] }
+                    ]
+                },
+                'Report': {
+                    outgoing: [
+                        { type: 'authored-by', targets: ['Identity'] }
+                    ],
+                    incoming: [
+                        { type: 'analyses', sources: ['Note', 'Opinion'] },
+                        { type: 'authored-by', sources: ['Identity'] }
+                    ]
+                },
+                'Note': {
+                    outgoing: [
+                        { type: 'analyses', targets: ['Report'] }
+                    ],
+                    incoming: []
+                },
+                'Opinion': {
+                    outgoing: [
+                        { type: 'analyses', targets: ['Report'] }
+                    ],
+                    incoming: []
+                },
+                'Grouping': { outgoing: [], incoming: [] },
+                'Malware Analysis': {
+                    outgoing: [
+                        { type: 'characterizes', targets: ['Malware'] },
+                        { type: 'dynamic-analysis-of', targets: ['Malware', 'Tool'] },
+                        { type: 'static-analysis-of', targets: ['Malware', 'Tool'] }
+                    ],
+                    incoming: []
+                },
+                'Case': {
+                    outgoing: [
+                        { type: 'investigates', targets: ['Campaign', 'Incident', 'Infrastructure', 'Malware', 'Threat Actor Group', 'Threat Actor Individual'] }
+                    ],
+                    incoming: []
+                },
+                'Channel': {
+                    outgoing: [
+                        { type: 'amplifies', targets: ['Incident', 'Narrative'] },
+                        { type: 'publishes', targets: ['Narrative'] }
+                    ],
+                    incoming: [
+                        { type: 'hosts', sources: ['Infrastructure'] }
+                    ]
+                },
+                'Narrative': {
+                    outgoing: [
+                        { type: 'subnarrative-of', targets: ['Narrative'] }
+                    ],
+                    incoming: [
+                        { type: 'amplifies', sources: ['Channel', 'Event'] },
+                        { type: 'authored-by', sources: ['Identity'] },
+                        { type: 'publishes', sources: ['Channel', 'Identity'] },
+                        { type: 'subnarrative-of', sources: ['Narrative'] }
+                    ]
+                },
+                'Event': {
+                    outgoing: [
+                        { type: 'amplifies', targets: ['Incident', 'Narrative'] },
+                        { type: 'uses', targets: ['Attack Pattern', 'Malware', 'Tool'] }
+                    ],
+                    incoming: [
+                        { type: 'participates-in', sources: ['Identity'] }
+                    ]
+                },
+                'System': {
+                    outgoing: [
+                        { type: 'belongs-to', targets: ['Identity', 'Organization'] },
+                        { type: 'communicates-with', targets: ['Infrastructure', 'System'] },
+                        { type: 'has', targets: ['Software', 'Vulnerability'] },
+                        { type: 'part-of', targets: ['Infrastructure'] }
+                    ],
+                    incoming: [
+                        { type: 'communicates-with', sources: ['Infrastructure', 'System'] },
+                        { type: 'compromises', sources: ['Incident', 'Threat Actor Group'] },
+                        { type: 'owns', sources: ['Identity'] }
+                    ]
+                },
+                'IPv4-Addr': {
+                    outgoing: [
+                        { type: 'belongs-to', targets: ['Autonomous-System'] }
+                    ],
+                    incoming: [
+                        { type: 'based-on', sources: ['Indicator'] },
+                        { type: 'consists-of', sources: ['Infrastructure'] },
+                        { type: 'dst', sources: ['Network-Traffic'] },
+                        { type: 'resolves-to', sources: ['Domain-Name', 'Hostname', 'Infrastructure'] },
+                        { type: 'src', sources: ['Network-Traffic'] }
+                    ]
+                },
+                'IPv6-Addr': {
+                    outgoing: [
+                        { type: 'belongs-to', targets: ['Autonomous-System'] }
+                    ],
+                    incoming: [
+                        { type: 'based-on', sources: ['Indicator'] },
+                        { type: 'consists-of', sources: ['Infrastructure'] },
+                        { type: 'dst', sources: ['Network-Traffic'] },
+                        { type: 'resolves-to', sources: ['Domain-Name', 'Hostname', 'Infrastructure'] },
+                        { type: 'src', sources: ['Network-Traffic'] }
+                    ]
+                },
+                'Domain-Name': {
+                    outgoing: [
+                        { type: 'resolves-to', targets: ['IPv4-Addr', 'IPv6-Addr'] }
+                    ],
+                    incoming: [
+                        { type: 'based-on', sources: ['Indicator'] },
+                        { type: 'communicated-with', sources: ['Network-Traffic'] },
+                        { type: 'consists-of', sources: ['Infrastructure'] }
+                    ]
+                },
+                'Hostname': {
+                    outgoing: [
+                        { type: 'resolves-to', targets: ['IPv4-Addr', 'IPv6-Addr'] }
+                    ],
+                    incoming: []
+                },
+                'URL': {
+                    outgoing: [],
+                    incoming: [
+                        { type: 'based-on', sources: ['Indicator'] },
+                        { type: 'consists-of', sources: ['Infrastructure'] },
+                        { type: 'downloaded-from', sources: ['File'] }
+                    ]
+                },
+                'Email-Addr': {
+                    outgoing: [],
+                    incoming: [
+                        { type: 'based-on', sources: ['Indicator'] },
+                        { type: 'corresponds-to', sources: ['User-Account'] },
+                        { type: 'from', sources: ['Email-Message'] },
+                        { type: 'sender', sources: ['Email-Message'] },
+                        { type: 'to', sources: ['Email-Message'] }
+                    ]
+                },
+                'Email-Message': {
+                    outgoing: [
+                        { type: 'consists-of', targets: ['Email-Mime-Part-Type'] },
+                        { type: 'from', targets: ['Email-Addr'] },
+                        { type: 'raw-email', targets: ['Artifact'] },
+                        { type: 'sender', targets: ['Email-Addr'] },
+                        { type: 'to', targets: ['Email-Addr'] }
+                    ],
+                    incoming: []
+                },
+                'File': {
+                    outgoing: [
+                        { type: 'contained-in', targets: ['Directory'] },
+                        { type: 'created-by', targets: ['User-Account'] },
+                        { type: 'downloaded-from', targets: ['URL'] },
+                        { type: 'sample', targets: ['Malware'] }
+                    ],
+                    incoming: [
+                        { type: 'based-on', sources: ['Indicator'] },
+                        { type: 'contains', sources: ['Directory'] },
+                        { type: 'downloads', sources: ['Malware', 'Tool'] },
+                        { type: 'drops', sources: ['Malware', 'Tool'] },
+                        { type: 'image', sources: ['Process'] },
+                        { type: 'service-dll', sources: ['Process'] }
+                    ]
+                },
+                'Directory': {
+                    outgoing: [
+                        { type: 'contains', targets: ['File'] }
+                    ],
+                    incoming: [
+                        { type: 'contained-in', sources: ['File'] }
+                    ]
+                },
+                'Artifact': {
+                    outgoing: [
+                        { type: 'sample', targets: ['Malware'] }
+                    ],
+                    incoming: [
+                        { type: 'based-on', sources: ['Indicator'] },
+                        { type: 'raw-email', sources: ['Email-Message'] }
+                    ]
+                },
+                'Network-Traffic': {
+                    outgoing: [
+                        { type: 'communicated-with', targets: ['Domain-Name'] },
+                        { type: 'dst', targets: ['IPv4-Addr', 'IPv6-Addr', 'Mac-Addr'] },
+                        { type: 'src', targets: ['IPv4-Addr', 'IPv6-Addr', 'Mac-Addr'] }
+                    ],
+                    incoming: [
+                        { type: 'intercepts', sources: ['Infrastructure', 'Malware'] },
+                        { type: 'opened-connection', sources: ['Process'] }
+                    ]
+                },
+                'Process': {
+                    outgoing: [
+                        { type: 'created-by', targets: ['User-Account'] },
+                        { type: 'image', targets: ['File'] },
+                        { type: 'opened-connection', targets: ['Network-Traffic'] },
+                        { type: 'parent', targets: ['Process'] },
+                        { type: 'service-dll', targets: ['File'] }
+                    ],
+                    incoming: [
+                        { type: 'parent', sources: ['Process'] }
+                    ]
+                },
+                'User-Account': {
+                    outgoing: [
+                        { type: 'belongs-to', targets: ['Identity'] },
+                        { type: 'corresponds-to', targets: ['Email-Addr'] }
+                    ],
+                    incoming: [
+                        { type: 'created-by', sources: ['File', 'Process'] }
+                    ]
+                },
+                'Software': {
+                    outgoing: [],
+                    incoming: [
+                        { type: 'has', sources: ['System'] }
+                    ]
+                },
+                'Windows-Registry-Key': {
+                    outgoing: [
+                        { type: 'values', targets: ['Windows-Registry-Value-Type'] }
+                    ],
+                    incoming: []
+                },
+                'Mac-Addr': {
+                    outgoing: [],
+                    incoming: [
+                        { type: 'dst', sources: ['Network-Traffic'] },
+                        { type: 'src', sources: ['Network-Traffic'] }
+                    ]
+                },
+                'Autonomous-System': {
+                    outgoing: [],
+                    incoming: [
+                        { type: 'belongs-to', sources: ['IPv4-Addr', 'IPv6-Addr'] }
+                    ]
+                },
+                'Mutex': { outgoing: [], incoming: [] },
+                'X509-Certificate': { outgoing: [], incoming: [] },
+                'Cryptocurrency-Wallet': { outgoing: [], incoming: [] },
+                'User-Agent': { outgoing: [], incoming: [] },
+                'Phone-Number': { outgoing: [], incoming: [] },
+                'Credential': { outgoing: [], incoming: [] },
+                'Bank-Account': { outgoing: [], incoming: [] },
+                'Payment-Card': { outgoing: [], incoming: [] },
+                'Media-Content': { outgoing: [], incoming: [] },
+                'Text': { outgoing: [], incoming: [] },
+                'Windows-Registry-Value-Type': {
+                    outgoing: [],
+                    incoming: [{ type: 'values', sources: ['Windows-Registry-Key'] }]
+                },
+                'Email-Mime-Part-Type': {
+                    outgoing: [],
+                    incoming: [{ type: 'consists-of', sources: ['Email-Message'] }]
+                },
+                'Organization': {
+                    outgoing: [],
+                    incoming: [
+                        { type: 'affiliated-with', sources: ['Threat Actor Individual'] },
+                        { type: 'belongs-to', sources: ['System'] }
+                    ]
+                }
+            }
+        };
+
+        // Canvas and node management
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let selectedEntity = null;
+        let currentFilter = 'all';
+        let zoomLevel = 1;
+        let nodes = {};
+        let isDragging = false;
+        let draggedNode = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        function resizeCanvas() {
+            canvas.width = 2000;
+            canvas.height = 1400;
+            
+            if (selectedEntity) {
+                drawRelationshipGraph(selectedEntity);
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Mouse event handlers for dragging
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Check if clicked on a node
+            for (let [nodeName, node] of Object.entries(nodes)) {
+                const dx = x - node.x;
+                const dy = y - node.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= node.radius) {
+                    isDragging = true;
+                    draggedNode = nodeName;
+                    dragOffsetX = dx;
+                    dragOffsetY = dy;
+                    canvas.style.cursor = 'grabbing';
+                    canvas.classList.add('dragging');
+                    break;
+                }
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (isDragging && draggedNode) {
+                nodes[draggedNode].x = x - dragOffsetX;
+                nodes[draggedNode].y = y - dragOffsetY;
+                drawRelationshipGraph(selectedEntity);
+            } else {
+                // Check if hovering over a node
+                let hovering = false;
+                for (let [nodeName, node] of Object.entries(nodes)) {
+                    const dx = x - node.x;
+                    const dy = y - node.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance <= node.radius) {
+                        hovering = true;
+                        break;
+                    }
+                }
+                canvas.style.cursor = hovering ? 'grab' : 'default';
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+            draggedNode = null;
+            canvas.style.cursor = 'default';
+            canvas.classList.remove('dragging');
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+            draggedNode = null;
+            canvas.style.cursor = 'default';
+            canvas.classList.remove('dragging');
+        });
+
+        // Zoom controls
+        document.getElementById('zoomIn').addEventListener('click', () => {
+            zoomLevel = Math.min(zoomLevel + 0.2, 2);
+            if (selectedEntity) drawRelationshipGraph(selectedEntity);
+        });
+
+        document.getElementById('zoomOut').addEventListener('click', () => {
+            zoomLevel = Math.max(zoomLevel - 0.2, 0.6);
+            if (selectedEntity) drawRelationshipGraph(selectedEntity);
+        });
+
+        document.getElementById('zoomReset').addEventListener('click', () => {
+            zoomLevel = 1;
+            if (selectedEntity) drawRelationshipGraph(selectedEntity);
+        });
+
+        document.getElementById('resetPositions').addEventListener('click', () => {
+            if (selectedEntity) {
+                nodes = {};
+                drawRelationshipGraph(selectedEntity);
+            }
+        });
+
+        // Initialize entity list
+        function initializeEntityList() {
+            const container = document.getElementById('entityCategories');
+            container.innerHTML = '';
+
+            Object.entries(entityData.categories).forEach(([categoryName, categoryData]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'entity-category';
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'category-title';
+                titleDiv.textContent = categoryName;
+                categoryDiv.appendChild(titleDiv);
+
+                categoryData.entities.forEach(entity => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'entity-item';
+                    itemDiv.textContent = entity;
+                    itemDiv.dataset.entity = entity;
+                    itemDiv.dataset.type = categoryData.type;
+
+                    itemDiv.addEventListener('click', () => selectEntity(entity));
+                    categoryDiv.appendChild(itemDiv);
+                });
+
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        // Select entity
+        function selectEntity(entityName) {
+            selectedEntity = entityName;
+
+            document.querySelectorAll('.entity-item').forEach(item => {
+                item.classList.toggle('selected', item.dataset.entity === entityName);
+            });
+
+            // Reset nodes when changing entity
+            nodes = {};
+            drawRelationshipGraph(entityName);
+            updateInfoPanel(entityName);
+        }
+
+        // Draw relationship graph with draggable nodes
+        function drawRelationshipGraph(entityName) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            const relationships = entityData.relationships[entityName];
+            if (!relationships) return;
+
+            // Calculate complexity
+            const outgoingCount = relationships.outgoing?.length || 0;
+            const incomingCount = relationships.incoming?.length || 0;
+            const totalCount = outgoingCount + incomingCount;
+
+            // Show complexity warning
+            const canvasArea = document.getElementById('canvasArea');
+            let warning = canvasArea.querySelector('.complexity-warning');
+            if (totalCount > 15) {
+                if (!warning) {
+                    warning = document.createElement('div');
+                    warning.className = 'complexity-warning';
+                    canvasArea.appendChild(warning);
+                }
+                warning.textContent = `Complex entity: ${totalCount} relationship types. Drag nodes to organize the view.`;
+                warning.style.display = 'block';
+            } else if (warning) {
+                warning.style.display = 'none';
+            }
+
+            // Adaptive sizing
+            const baseRadius = Math.min(550, 250 + (totalCount * 12));
+            const radius = baseRadius * zoomLevel;
+            const centerNodeSize = 65 * zoomLevel;
+            const satelliteNodeSize = 48 * zoomLevel;
+
+            // Initialize center node if not exists
+            if (!nodes[entityName]) {
+                nodes[entityName] = { x: centerX, y: centerY, radius: centerNodeSize };
+            }
+
+            // Draw outgoing relationships
+            const outgoing = relationships.outgoing || [];
+            const outgoingMap = new Map();
+            outgoing.forEach(rel => {
+                rel.targets.forEach(target => {
+                    if (!outgoingMap.has(target)) {
+                        outgoingMap.set(target, []);
+                    }
+                    outgoingMap.get(target).push(rel.type);
+                });
+            });
+
+            const outgoingArray = Array.from(outgoingMap.entries());
+            const outgoingAngleStep = (Math.PI * 2) / Math.max(outgoingArray.length, 1);
+
+            outgoingArray.forEach(([target, types], index) => {
+                // Initialize node position if not exists
+                if (!nodes[target]) {
+                    const angle = index * outgoingAngleStep - Math.PI / 2;
+                    nodes[target] = {
+                        x: centerX + Math.cos(angle) * radius,
+                        y: centerY + Math.sin(angle) * radius,
+                        radius: satelliteNodeSize
+                    };
+                }
+
+                const node = nodes[target];
+
+                // Draw line
+                ctx.strokeStyle = '#42a5f5';
+                ctx.lineWidth = 3 * zoomLevel;
+                ctx.beginPath();
+                ctx.moveTo(nodes[entityName].x, nodes[entityName].y);
+                ctx.lineTo(node.x, node.y);
+                ctx.stroke();
+
+                // Draw arrow
+                const angle = Math.atan2(node.y - nodes[entityName].y, node.x - nodes[entityName].x);
+                const arrowSize = 20 * zoomLevel;
+                const arrowX = node.x - Math.cos(angle) * node.radius;
+                const arrowY = node.y - Math.sin(angle) * node.radius;
+                
+                ctx.fillStyle = '#42a5f5';
+                ctx.beginPath();
+                ctx.moveTo(arrowX, arrowY);
+                ctx.lineTo(arrowX - arrowSize * Math.cos(angle - Math.PI / 6), arrowY - arrowSize * Math.sin(angle - Math.PI / 6));
+                ctx.lineTo(arrowX - arrowSize * Math.cos(angle + Math.PI / 6), arrowY - arrowSize * Math.sin(angle + Math.PI / 6));
+                ctx.closePath();
+                ctx.fill();
+
+                // Draw relationship label
+                const midX = (nodes[entityName].x + node.x) / 2;
+                const midY = (nodes[entityName].y + node.y) / 2;
+                
+                drawRelationshipLabel(midX, midY, types, '#90caf9', '#42a5f5');
+
+                // Draw target node
+                drawNode(node.x, node.y, node.radius, target, '#1976d2', '#42a5f5');
+            });
+
+            // Draw incoming relationships
+            const incoming = relationships.incoming || [];
+            const incomingMap = new Map();
+            incoming.forEach(rel => {
+                rel.sources.forEach(source => {
+                    if (!incomingMap.has(source)) {
+                        incomingMap.set(source, []);
+                    }
+                    incomingMap.get(source).push(rel.type);
+                });
+            });
+
+            const incomingArray = Array.from(incomingMap.entries());
+            const innerRadius = radius * 0.72;
+            const incomingAngleStep = (Math.PI * 2) / Math.max(incomingArray.length, 1);
+
+            incomingArray.forEach(([source, types], index) => {
+                // Initialize node position if not exists
+                const nodeKey = `incoming_${source}`;
+                if (!nodes[nodeKey]) {
+                    const angle = index * incomingAngleStep + Math.PI / 4;
+                    nodes[nodeKey] = {
+                        x: centerX + Math.cos(angle) * innerRadius,
+                        y: centerY + Math.sin(angle) * innerRadius,
+                        radius: satelliteNodeSize
+                    };
+                }
+
+                const node = nodes[nodeKey];
+
+                // Draw line
+                ctx.strokeStyle = '#ab47bc';
+                ctx.lineWidth = 3 * zoomLevel;
+                ctx.beginPath();
+                ctx.moveTo(node.x, node.y);
+                ctx.lineTo(nodes[entityName].x, nodes[entityName].y);
+                ctx.stroke();
+
+                // Draw arrow
+                const angle = Math.atan2(nodes[entityName].y - node.y, nodes[entityName].x - node.x);
+                const arrowSize = 20 * zoomLevel;
+                const arrowDistance = nodes[entityName].radius + 5 * zoomLevel;
+                const arrowX = nodes[entityName].x - Math.cos(angle) * arrowDistance;
+                const arrowY = nodes[entityName].y - Math.sin(angle) * arrowDistance;
+                
+                ctx.fillStyle = '#ab47bc';
+                ctx.beginPath();
+                ctx.moveTo(arrowX, arrowY);
+                ctx.lineTo(arrowX - arrowSize * Math.cos(angle - Math.PI / 6), arrowY - arrowSize * Math.sin(angle - Math.PI / 6));
+                ctx.lineTo(arrowX - arrowSize * Math.cos(angle + Math.PI / 6), arrowY - arrowSize * Math.sin(angle + Math.PI / 6));
+                ctx.closePath();
+                ctx.fill();
+
+                // Draw relationship label
+                const midX = (node.x + nodes[entityName].x) / 2;
+                const midY = (node.y + nodes[entityName].y) / 2;
+                
+                drawRelationshipLabel(midX, midY, types, '#ce93d8', '#ab47bc');
+
+                // Draw source node
+                drawNode(node.x, node.y, node.radius, source, '#7b1fa2', '#ab47bc');
+            });
+
+            // Draw center entity (on top)
+            drawNode(nodes[entityName].x, nodes[entityName].y, nodes[entityName].radius, entityName, '#1976d2', '#90caf9', true);
+        }
+
+        function drawNode(x, y, radius, label, fillColor, strokeColor, isCenter = false) {
+            ctx.fillStyle = fillColor;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = (isCenter ? 5 : 3) * zoomLevel;
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${(isCenter ? 17 : 14) * zoomLevel}px "IBM Plex Sans"`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const lines = wrapText(ctx, label, (isCenter ? 110 : 85) * zoomLevel);
+            const lineHeight = (isCenter ? 22 : 18) * zoomLevel;
+            lines.forEach((line, i) => {
+                ctx.fillText(line, x, y - (lines.length - 1) * lineHeight/2 + i * lineHeight);
+            });
+        }
+
+        function drawRelationshipLabel(x, y, types, textColor, borderColor) {
+            ctx.font = `bold ${15 * zoomLevel}px "IBM Plex Sans"`;
+            ctx.fillStyle = textColor;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const labelText = types.length > 2 ? `${types.length} rels` : types.join(', ');
+            const maxWidth = 150 * zoomLevel;
+            const lines = wrapText(ctx, labelText, maxWidth);
+            
+            const padding = 10 * zoomLevel;
+            const lineHeight = 20 * zoomLevel;
+            const bgHeight = lines.length * lineHeight + padding * 2;
+            const labelWidth = Math.max(...lines.map(l => ctx.measureText(l).width));
+            const bgWidth = Math.min(labelWidth + padding * 2, maxWidth + padding * 2);
+            
+            // Background
+            ctx.fillStyle = 'rgba(10, 25, 41, 0.97)';
+            ctx.fillRect(x - bgWidth/2, y - bgHeight/2, bgWidth, bgHeight);
+            
+            // Border
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = 2 * zoomLevel;
+            ctx.strokeRect(x - bgWidth/2, y - bgHeight/2, bgWidth, bgHeight);
+            
+            // Text
+            ctx.fillStyle = textColor;
+            lines.forEach((line, i) => {
+                ctx.fillText(line, x, y - (lines.length - 1) * lineHeight/2 + i * lineHeight);
+            });
+        }
+
+        function wrapText(ctx, text, maxWidth) {
+            const words = text.split(/[\s-]+/);
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                const testLine = currentLine + ' ' + words[i];
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth) {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // Update info panel
+        function updateInfoPanel(entityName) {
+            const panel = document.getElementById('infoPanel');
+            const relationships = entityData.relationships[entityName];
+
+            if (!relationships) {
+                panel.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No relationships defined</h3>
+                        <p>This entity type doesn't have documented relationships yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const outgoingCount = relationships.outgoing?.length || 0;
+            const incomingCount = relationships.incoming?.length || 0;
+            const totalRels = outgoingCount + incomingCount;
+
+            let html = `
+                <h2>${entityName}</h2>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number">${totalRels}</div>
+                        <div class="stat-label">Total Relations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${outgoingCount}</div>
+                        <div class="stat-label">Outgoing</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${incomingCount}</div>
+                        <div class="stat-label">Incoming</div>
+                    </div>
+                </div>
+            `;
+
+            if (relationships.outgoing && relationships.outgoing.length > 0) {
+                html += `
+                    <div class="info-section">
+                        <h3>
+                            Outgoing Relationships 
+                            <span class="badge outgoing">${relationships.outgoing.length}</span>
+                        </h3>
+                `;
+                
+                relationships.outgoing.forEach(rel => {
+                    rel.targets.forEach(target => {
+                        html += `
+                            <div class="relationship-item" onclick="selectEntity('${target}')">
+                                <div class="relationship-type">${rel.type}</div>
+                                <div class="relationship-target">
+                                    ${entityName} <span class="arrow">→</span> ${target}
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+                
+                html += `</div>`;
+            }
+
+            if (relationships.incoming && relationships.incoming.length > 0) {
+                html += `
+                    <div class="info-section">
+                        <h3>
+                            Incoming Relationships 
+                            <span class="badge incoming">${relationships.incoming.length}</span>
+                        </h3>
+                `;
+                
+                relationships.incoming.forEach(rel => {
+                    rel.sources.forEach(source => {
+                        html += `
+                            <div class="relationship-item incoming-rel" onclick="selectEntity('${source}')">
+                                <div class="relationship-type">${rel.type}</div>
+                                <div class="relationship-target">
+                                    ${source} <span class="arrow">→</span> ${entityName}
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+                
+                html += `</div>`;
+            }
+
+            html += `
+                <div class="legend">
+                    <h4>Legend</h4>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #1976d2; border: 2px solid #42a5f5;"></div>
+                        <span>Outgoing: This entity initiates the relationship</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #7b1fa2; border: 2px solid #ab47bc;"></div>
+                        <span>Incoming: Other entities relate to this one</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: transparent; border: 2px solid #90caf9;"></div>
+                        <span>💡 Drag nodes to reposition them</span>
+                    </div>
+                </div>
+            `;
+
+            panel.innerHTML = html;
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.entity-item').forEach(item => {
+                const entityName = item.dataset.entity.toLowerCase();
+                const match = entityName.includes(searchTerm);
+                item.style.display = match ? 'block' : 'none';
+            });
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filter = btn.dataset.filter;
+                currentFilter = filter;
+                
+                document.querySelectorAll('.entity-item').forEach(item => {
+                    if (filter === 'all' || item.dataset.type === filter) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Initialize
+        initializeEntityList();
+    </script>
+</body>
+</html>
